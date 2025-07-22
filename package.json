@@ -1,5 +1,8 @@
 {
   "name": "react-compare-2d",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "version": "0.0.0",
   "description": "A React component for creating interactive 2D comparison sliders with multidirectional sliding.",
   "type": "module",
