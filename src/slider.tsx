@@ -153,8 +153,6 @@ export const React2DComparisonSlider: React.FC<React2DComparisonSliderProps> = (
     width,
     height,
     overflow: 'hidden',
-    cursor: disabled ? 'default' : 'crosshair',
-    border: '1px solid #ccc',
     ...style
   }
 
@@ -179,40 +177,26 @@ export const React2DComparisonSlider: React.FC<React2DComparisonSliderProps> = (
     position: 'absolute',
     left: `${position.x}%`,
     top: `${position.y}%`,
-    width: 20,
-    height: 20,
-    borderRadius: '50%',
-    backgroundColor: 'white',
-    border: '2px solid #333',
     transform: 'translate(-50%, -50%)',
-    cursor: disabled ? 'default' : 'grab',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
     zIndex: 10
   }
 
-  const lineStyle: React.CSSProperties = {
+  const verticalLineStyle: React.CSSProperties = {
     position: 'absolute',
-    backgroundColor: 'white',
-    boxShadow: '0 0 2px rgba(0,0,0,0.5)',
+    left: `${position.x}%`,
+    top: 0,
+    height: '100%',
+    transform: 'translateX(-50%)',
     zIndex: 5
   }
 
-  const verticalLineStyle: React.CSSProperties = {
-    ...lineStyle,
-    left: `${position.x}%`,
-    top: 0,
-    width: 2,
-    height: '100%',
-    transform: 'translateX(-50%)'
-  }
-
   const horizontalLineStyle: React.CSSProperties = {
-    ...lineStyle,
+    position: 'absolute',
     top: `${position.y}%`,
     left: 0,
     width: '100%',
-    height: 2,
-    transform: 'translateY(-50%)'
+    transform: 'translateY(-50%)',
+    zIndex: 5
   }
 
   return (
@@ -227,19 +211,69 @@ export const React2DComparisonSlider: React.FC<React2DComparisonSliderProps> = (
       aria-labelledby={ariaLabelledby}
       tabIndex={disabled ? -1 : 0}
       onKeyDown={handleKeyDown}
+      data-react-2d-slider="container"
+      data-state={disabled ? 'disabled' : isDragging ? 'dragging' : 'idle'}
+      data-x={Math.round(position.x)}
+      data-y={Math.round(position.y)}
     >
-      <div style={afterContainerStyle}>
-        {afterImage && <img src={afterImage} alt="After" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-        {afterContent}
+      <div 
+        style={afterContainerStyle}
+        data-react-2d-slider="after-container"
+        data-content-type={afterImage ? 'image' : 'custom'}
+      >
+        {afterImage && (
+          <img 
+            src={afterImage} 
+            alt="After" 
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+            data-react-2d-slider="after-image"
+          />
+        )}
+        {afterContent && (
+          <div 
+            data-react-2d-slider="after-content"
+            style={{ width: '100%', height: '100%' }}
+          >
+            {afterContent}
+          </div>
+        )}
       </div>
       
-      <div style={beforeContainerStyle}>
-        {beforeImage && <img src={beforeImage} alt="Before" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-        {beforeContent}
+      <div 
+        style={beforeContainerStyle}
+        data-react-2d-slider="before-container"
+        data-content-type={beforeImage ? 'image' : 'custom'}
+      >
+        {beforeImage && (
+          <img 
+            src={beforeImage} 
+            alt="Before" 
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+            data-react-2d-slider="before-image"
+          />
+        )}
+        {beforeContent && (
+          <div 
+            data-react-2d-slider="before-content"
+            style={{ width: '100%', height: '100%' }}
+          >
+            {beforeContent}
+          </div>
+        )}
       </div>
 
-      <div style={verticalLineStyle} />
-      <div style={horizontalLineStyle} />
+      <div 
+        style={verticalLineStyle} 
+        data-react-2d-slider="line"
+        data-orientation="vertical"
+        data-x={Math.round(position.x)}
+      />
+      <div 
+        style={horizontalLineStyle} 
+        data-react-2d-slider="line"
+        data-orientation="horizontal"
+        data-y={Math.round(position.y)}
+      />
       
       <div
         ref={handleRef}
@@ -251,6 +285,10 @@ export const React2DComparisonSlider: React.FC<React2DComparisonSliderProps> = (
         aria-valuenow={Math.round((position.x + position.y) / 2)}
         aria-valuetext={`X: ${Math.round(position.x)}%, Y: ${Math.round(position.y)}%`}
         aria-orientation="horizontal"
+        data-react-2d-slider="handle"
+        data-state={disabled ? 'disabled' : isDragging ? 'dragging' : 'idle'}
+        data-x={Math.round(position.x)}
+        data-y={Math.round(position.y)}
       />
       
       <div
@@ -262,6 +300,8 @@ export const React2DComparisonSlider: React.FC<React2DComparisonSliderProps> = (
         aria-valuenow={Math.round(position.y)}
         aria-valuetext={`Y: ${Math.round(position.y)}%`}
         aria-orientation="vertical"
+        data-react-2d-slider="accessibility-handle"
+        data-orientation="vertical"
       />
     </div>
   )

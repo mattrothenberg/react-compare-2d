@@ -1,0 +1,29 @@
+/* Basic styles for React2DComparisonSlider */
+/* Include this stylesheet for minimal default styling */
+
+[data-react-2d-slider="container"] {
+  border-radius: 0;
+}
+
+[data-react-2d-slider="handle"] {
+  width: 16px;
+  height: 16px;
+  background: black;
+  border-radius: 50%;
+}
+
+[data-react-2d-slider="container"]:focus-within [data-react-2d-slider="handle"] {
+  outline: 4px auto white;
+}
+
+[data-react-2d-slider="line"] {
+  background: black;
+}
+
+[data-react-2d-slider="line"][data-orientation="vertical"] {
+  width: 1px;
+}
+
+[data-react-2d-slider="line"][data-orientation="horizontal"] {
+  height: 1px;
+}

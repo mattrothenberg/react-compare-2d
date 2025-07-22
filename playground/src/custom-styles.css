@@ -1,0 +1,148 @@
+/* Example custom styling for React2DComparisonSlider */
+/* These styles demonstrate the power of data attribute selectors */
+
+/* Container styling */
+[data-react-2d-slider="container"] {
+  border: 2px solid #3b82f6;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+  transition: all 0.2s ease;
+}
+
+/* Container states */
+[data-react-2d-slider="container"][data-state="dragging"] {
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+  transform: scale(1.02);
+}
+
+[data-react-2d-slider="container"][data-state="disabled"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Handle styling */
+[data-react-2d-slider="handle"] {
+  width: 24px !important;
+  height: 24px !important;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+  border: 3px solid white !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-react-2d-slider="handle"]:hover {
+  transform: translate(-50%, -50%) scale(1.1) !important;
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.6) !important;
+}
+
+[data-react-2d-slider="handle"][data-state="dragging"] {
+  transform: translate(-50%, -50%) scale(1.2) !important;
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.8) !important;
+}
+
+/* Line styling */
+[data-react-2d-slider="line"] {
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8) !important;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5) !important;
+}
+
+[data-react-2d-slider="line"][data-orientation="vertical"] {
+  width: 3px !important;
+  background: linear-gradient(180deg, #3b82f6, #1d4ed8) !important;
+}
+
+[data-react-2d-slider="line"][data-orientation="horizontal"] {
+  height: 3px !important;
+}
+
+/* Content container styling */
+[data-react-2d-slider="before-container"] {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+[data-react-2d-slider="after-container"] {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Image styling */
+[data-react-2d-slider="before-image"],
+[data-react-2d-slider="after-image"] {
+  transition: transform 0.2s ease;
+}
+
+[data-react-2d-slider="container"][data-state="dragging"] [data-react-2d-slider="before-image"],
+[data-react-2d-slider="container"][data-state="dragging"] [data-react-2d-slider="after-image"] {
+  transform: scale(1.02);
+}
+
+/* Custom content styling */
+[data-react-2d-slider="before-content"],
+[data-react-2d-slider="after-content"] {
+  transition: all 0.2s ease;
+}
+
+/* Position-based styling examples */
+/* Style differently based on handle position */
+[data-react-2d-slider="container"][data-x="0"] [data-react-2d-slider="handle"] {
+  border-color: #ef4444 !important;
+}
+
+[data-react-2d-slider="container"][data-x="100"] [data-react-2d-slider="handle"] {
+  border-color: #10b981 !important;
+}
+
+[data-react-2d-slider="container"][data-y="0"] [data-react-2d-slider="line"] {
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.6) !important;
+}
+
+[data-react-2d-slider="container"][data-y="100"] [data-react-2d-slider="line"] {
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.6) !important;
+}
+
+/* Dark theme example */
+@media (prefers-color-scheme: dark) {
+  [data-react-2d-slider="container"] {
+    border-color: #6366f1;
+    background-color: #111827;
+  }
+  
+  [data-react-2d-slider="handle"] {
+    background: linear-gradient(135deg, #6366f1, #4338ca) !important;
+    border-color: #1f2937 !important;
+  }
+  
+  [data-react-2d-slider="line"] {
+    background: #6366f1 !important;
+  }
+}
+
+/* Animation examples */
+@keyframes pulse-handle {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.05); }
+}
+
+[data-react-2d-slider="handle"][data-state="idle"]:hover {
+  animation: pulse-handle 2s infinite;
+}
+
+/* Corner indicators */
+[data-react-2d-slider="container"][data-x="0"][data-y="0"]::before {
+  content: "🏠";
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 20;
+  font-size: 16px;
+}
+
+[data-react-2d-slider="container"][data-x="100"][data-y="100"]::after {
+  content: "🎯";
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  z-index: 20;
+  font-size: 16px;
+}
