@@ -38,9 +38,8 @@
     "dev": "tsdown --watch",
     "playground": "vite --config playground/vite.config.ts",
     "typecheck": "tsc --noEmit",
-    "publish": "npm run build && npm publish",
-    "release": "bumpp && npm run publish",
-    "prepublishOnly": "npm run build"
+    "release": "bumpp && npm publish",
+    "prepublishOnly": "npm run lint && npm run typecheck && npm run build"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.2",
