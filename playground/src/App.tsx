@@ -1,14 +1,19 @@
+import { useState } from 'react'
 import { type Position2D, React2DComparisonSlider } from '../../src'
 import './basic-styles.css'
 
 export function App() {
+  const [position, setPosition] = useState<Position2D>({ x: 75, y: 25 })
+
   const handlePositionChange = (position: Position2D) => {
     console.log('Position changed:', position)
+    setPosition(position)
   }
 
   return (
     <div className="p-4">
       <div className="size-64">
+        {JSON.stringify(position, null, 2)}
         <React2DComparisonSlider
           beforeContent={
             <div className="w-full h-full bg-gray-900 flex items-center justify-center">
@@ -26,10 +31,10 @@ export function App() {
               </div>
             </div>
           }
-          onPositionChange={handlePositionChange}
           width="100%"
           height={'100%'}
-          initialPosition={{ x: 75, y: 25 }}
+          onPositionChange={handlePositionChange}
+          position={position}
         />
       </div>
     </div>

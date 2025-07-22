@@ -12,6 +12,8 @@ interface React2DComparisonSliderProps {
   beforeContent?: React.ReactNode
   afterContent?: React.ReactNode
   onPositionChange?: (position: Position2D) => void
+  position?: Position2D
+  defaultPosition?: Position2D
   initialPosition?: Position2D
   width?: number | string
   height?: number | string
@@ -30,6 +32,8 @@ export const React2DComparisonSlider: React.FC<
   beforeContent,
   afterContent,
   onPositionChange,
+  position: controlledPosition,
+  defaultPosition,
   initialPosition = { x: 50, y: 50 },
   width = '100%',
   height = 400,
@@ -39,7 +43,11 @@ export const React2DComparisonSlider: React.FC<
   'aria-label': ariaLabel = '2D comparison slider',
   'aria-labelledby': ariaLabelledby,
 }) => {
-  const [position, setPosition] = useState<Position2D>(initialPosition)
+  const isControlled = controlledPosition !== undefined
+  const [internalPosition, setInternalPosition] = useState<Position2D>(
+    defaultPosition || initialPosition
+  )
+  const position = isControlled ? controlledPosition : internalPosition
   const [isDragging, setIsDragging] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const handleRef = useRef<HTMLDivElement>(null)
@@ -59,10 +67,12 @@ export const React2DComparisonSlider: React.FC<
       )
 
       const newPosition = { x, y }
-      setPosition(newPosition)
+      if (!isControlled) {
+        setInternalPosition(newPosition)
+      }
       onPositionChange?.(newPosition)
     },
-    [onPositionChange]
+    [isControlled, onPositionChange]
   )
 
   const handleMouseDown = useCallback(
@@ -153,10 +163,12 @@ export const React2DComparisonSlider: React.FC<
       }
 
       const newPosition = { x: newX, y: newY }
-      setPosition(newPosition)
+      if (!isControlled) {
+        setInternalPosition(newPosition)
+      }
       onPositionChange?.(newPosition)
     },
-    [disabled, position, onPositionChange]
+    [disabled, position, isControlled, onPositionChange]
   )
 
   useEffect(() => {
