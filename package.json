@@ -5,16 +5,15 @@
   "description": "A React component for creating interactive 2D comparison sliders with multidirectional sliding.",
   "type": "module",
   "license": "MIT",
-  "homepage": "https://github.com/gugustinette/react-components-starter#readme",
+  "homepage": "https://github.com/mattrothenberg/react-compare-2d#readme",
   "bugs": {
-    "url": "https://github.com/gugustinette/react-components-starter/issues"
+    "url": "https://github.com/mattrothenberg/react-compare-2d/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gugustinette/react-components-starter.git"
+    "url": "git+https://github.com/mattrothenberg/react-compare-2d.git"
   },
   "author": "Matt Rothenberg <hello@mattrothenberg.com>",
-  "funding": "https://github.com/sponsors/gugustinette",
   "files": [
     "dist"
   ],
@@ -23,6 +22,7 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js",
+    "./basic.css": "./dist/basic.css",
     "./package.json": "./package.json"
   },
   "publishConfig": {
