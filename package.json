@@ -27,6 +27,9 @@
     "./basic.css": "./dist/basic.css",
     "./package.json": "./package.json"
   },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
   "publishConfig": {
     "access": "public"
   },

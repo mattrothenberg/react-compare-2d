@@ -6,7 +6,7 @@ export interface Position2D {
   y: number
 }
 
-interface React2DComparisonSliderProps {
+interface Compare2DProps {
   beforeImage?: string
   afterImage?: string
   beforeContent?: React.ReactNode
@@ -24,8 +24,8 @@ interface React2DComparisonSliderProps {
   'aria-labelledby'?: string
 }
 
-export const React2DComparisonSlider: React.FC<
-  React2DComparisonSliderProps
+export const Compare2D: React.FC<
+  Compare2DProps
 > = ({
   beforeImage,
   afterImage,
@@ -258,7 +258,7 @@ export const React2DComparisonSlider: React.FC<
   return (
     <div
       ref={containerRef}
-      className={`react-2d-comparison-slider ${className}`}
+      className={`compare-2d ${className}`}
       style={containerStyle}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
@@ -267,18 +267,18 @@ export const React2DComparisonSlider: React.FC<
       aria-labelledby={ariaLabelledby}
       tabIndex={disabled ? -1 : 0}
       onKeyDown={handleKeyDown}
-      data-react-2d-slider="container"
+      data-compare-2d="container"
       data-state={disabled ? 'disabled' : isDragging ? 'dragging' : 'idle'}
       data-x={Math.round(position.x)}
       data-y={Math.round(position.y)}
     >
       <div
         style={clippingContainerStyle}
-        data-react-2d-slider="clipping-container"
+        data-compare-2d="clip"
       >
         <div
           style={afterContainerStyle}
-          data-react-2d-slider="after-container"
+          data-compare-2d="after-container"
           data-content-type={afterImage ? 'image' : 'custom'}
         >
           {afterImage && (
@@ -286,12 +286,12 @@ export const React2DComparisonSlider: React.FC<
               src={afterImage}
               alt="After"
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              data-react-2d-slider="after-image"
+              data-compare-2d="after-image"
             />
           )}
           {afterContent && (
             <div
-              data-react-2d-slider="after-content"
+              data-compare-2d="after-content"
               style={{ width: '100%', height: '100%' }}
             >
               {afterContent}
@@ -301,7 +301,7 @@ export const React2DComparisonSlider: React.FC<
 
         <div
           style={beforeContainerStyle}
-          data-react-2d-slider="before-container"
+          data-compare-2d="before-container"
           data-content-type={beforeImage ? 'image' : 'custom'}
         >
           {beforeImage && (
@@ -309,12 +309,12 @@ export const React2DComparisonSlider: React.FC<
               src={beforeImage}
               alt="Before"
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              data-react-2d-slider="before-image"
+              data-compare-2d="before-image"
             />
           )}
           {beforeContent && (
             <div
-              data-react-2d-slider="before-content"
+              data-compare-2d="before-content"
               style={{ width: '100%', height: '100%' }}
             >
               {beforeContent}
@@ -324,13 +324,13 @@ export const React2DComparisonSlider: React.FC<
 
         <div
           style={verticalLineStyle}
-          data-react-2d-slider="line"
+          data-compare-2d="line"
           data-orientation="vertical"
           data-x={Math.round(position.x)}
         />
         <div
           style={horizontalLineStyle}
-          data-react-2d-slider="line"
+          data-compare-2d="line"
           data-orientation="horizontal"
           data-y={Math.round(position.y)}
         />
@@ -347,7 +347,7 @@ export const React2DComparisonSlider: React.FC<
         aria-valuenow={Math.round((position.x + position.y) / 2)}
         aria-valuetext={`X: ${Math.round(position.x)}%, Y: ${Math.round(position.y)}%`}
         aria-orientation="horizontal"
-        data-react-2d-slider="handle"
+        data-compare-2d="handle"
         data-state={disabled ? 'disabled' : isDragging ? 'dragging' : 'idle'}
         data-x={Math.round(position.x)}
         data-y={Math.round(position.y)}
@@ -363,7 +363,7 @@ export const React2DComparisonSlider: React.FC<
         aria-valuenow={Math.round(position.y)}
         aria-valuetext={`Y: ${Math.round(position.y)}%`}
         aria-orientation="vertical"
-        data-react-2d-slider="accessibility-handle"
+        data-compare-2d="handle-a11y"
         data-orientation="vertical"
       />
     </div>

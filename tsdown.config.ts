@@ -6,5 +6,6 @@ export default defineConfig([
     platform: 'neutral',
     dts: true,
     copy: ['./src/basic.css'],
+    external: ['react', 'react-dom'],
   },
 ])

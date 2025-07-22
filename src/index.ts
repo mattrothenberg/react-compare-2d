@@ -1,1 +1,1 @@
-export { type Position2D, React2DComparisonSlider } from './slider'
+export { type Position2D, Compare2D } from './slider'

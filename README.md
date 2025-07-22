@@ -23,7 +23,7 @@ npm install react-compare-2d
 ### Basic Usage
 
 ```tsx
-import { React2DComparisonSlider } from 'react-compare-2d'
+import { Compare2D } from 'react-compare-2d'
 import 'react-compare-2d/basic.css' // Optional basic styling
 
 function MyApp() {
@@ -32,7 +32,7 @@ function MyApp() {
   }
 
   return (
-    <React2DComparisonSlider
+    <Compare2D
       beforeImage="/before.jpg"
       afterImage="/after.jpg"
       onPositionChange={handlePositionChange}
@@ -46,7 +46,7 @@ function MyApp() {
 ### Custom Content
 
 ```tsx
-<React2DComparisonSlider
+<Compare2D
   beforeContent={
     <div style={{ background: '#000', color: '#fff', width: '100%', height: '100%' }}>
       Before State
@@ -114,13 +114,13 @@ Style any part of the component using data attribute selectors:
 
 ```css
 /* Container */
-[data-react-2d-slider="container"] {
+[data-compare-2d="container"] {
   border: 2px solid #000;
   border-radius: 8px;
 }
 
 /* Handle */
-[data-react-2d-slider="handle"] {
+[data-compare-2d="handle"] {
   width: 24px;
   height: 24px;
   background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
@@ -129,18 +129,18 @@ Style any part of the component using data attribute selectors:
 }
 
 /* Lines */
-[data-react-2d-slider="line"] {
+[data-compare-2d="line"] {
   background: #fff;
   box-shadow: 0 0 4px rgba(0,0,0,0.3);
 }
 
 /* State-based styling */
-[data-react-2d-slider="handle"][data-state="dragging"] {
+[data-compare-2d="handle"][data-state="dragging"] {
   transform: translate(-50%, -50%) scale(1.2);
 }
 
 /* Position-based styling */
-[data-react-2d-slider="container"][data-x="0"] [data-react-2d-slider="handle"] {
+[data-compare-2d="container"][data-x="0"] [data-compare-2d="handle"] {
   border-color: #ff0000;
 }
 ```
@@ -148,15 +148,15 @@ Style any part of the component using data attribute selectors:
 ### Available Data Attributes
 
 #### Component Parts
-- `[data-react-2d-slider="container"]` - Main container
-- `[data-react-2d-slider="handle"]` - Draggable crosshair handle
-- `[data-react-2d-slider="line"]` - Grid lines
-- `[data-react-2d-slider="before-container"]` - Before content area
-- `[data-react-2d-slider="after-container"]` - After content area
-- `[data-react-2d-slider="before-image"]` - Before image element
-- `[data-react-2d-slider="after-image"]` - After image element
-- `[data-react-2d-slider="before-content"]` - Before custom content wrapper
-- `[data-react-2d-slider="after-content"]` - After custom content wrapper
+- `[data-compare-2d="container"]` - Main container
+- `[data-compare-2d="handle"]` - Draggable crosshair handle
+- `[data-compare-2d="line"]` - Grid lines
+- `[data-compare-2d="before-container"]` - Before content area
+- `[data-compare-2d="after-container"]` - After content area
+- `[data-compare-2d="before-image"]` - Before image element
+- `[data-compare-2d="after-image"]` - After image element
+- `[data-compare-2d="before-content"]` - Before custom content wrapper
+- `[data-compare-2d="after-content"]` - After custom content wrapper
 
 #### Dynamic Attributes
 - `[data-state="idle|dragging|disabled"]` - Current interaction state
@@ -192,20 +192,20 @@ The component is fully accessible out of the box:
 
 ```css
 /* Change handle color based on position */
-[data-react-2d-slider="container"][data-x="0"] [data-react-2d-slider="handle"] {
+[data-compare-2d="container"][data-x="0"] [data-compare-2d="handle"] {
   background: #ff4444; /* Red at left edge */
 }
 
-[data-react-2d-slider="container"][data-x="100"] [data-react-2d-slider="handle"] {
+[data-compare-2d="container"][data-x="100"] [data-compare-2d="handle"] {
   background: #44ff44; /* Green at right edge */
 }
 
 /* Animate lines based on Y position */
-[data-react-2d-slider="container"][data-y="0"] [data-react-2d-slider="line"] {
+[data-compare-2d="container"][data-y="0"] [data-compare-2d="line"] {
   box-shadow: 0 0 10px #ff4444;
 }
 
-[data-react-2d-slider="container"][data-y="100"] [data-react-2d-slider="line"] {
+[data-compare-2d="container"][data-y="100"] [data-compare-2d="line"] {
   box-shadow: 0 0 10px #4444ff;
 }
 ```
@@ -214,18 +214,18 @@ The component is fully accessible out of the box:
 
 ```css
 /* Dragging state */
-[data-react-2d-slider="handle"][data-state="dragging"] {
+[data-compare-2d="handle"][data-state="dragging"] {
   transform: translate(-50%, -50%) scale(1.2);
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
 /* Hover effects */
-[data-react-2d-slider="container"]:hover [data-react-2d-slider="line"] {
+[data-compare-2d="container"]:hover [data-compare-2d="line"] {
   background: #0066cc;
 }
 
 /* Disabled state */
-[data-react-2d-slider="container"][data-state="disabled"] {
+[data-compare-2d="container"][data-state="disabled"] {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -235,20 +235,20 @@ The component is fully accessible out of the box:
 
 ```tsx
 // Data visualization comparison
-<React2DComparisonSlider
+<Compare2D
   beforeContent={<LineChart data={oldData} />}
   afterContent={<LineChart data={newData} />}
   onPositionChange={(pos) => updateVisualization(pos)}
 />
 
 // UI state comparison
-<React2DComparisonSlider
+<Compare2D
   beforeContent={<Dashboard theme="dark" />}
   afterContent={<Dashboard theme="light" />}
 />
 
 // Interactive maps
-<React2DComparisonSlider
+<Compare2D
   beforeContent={<Map year={2000} />}
   afterContent={<Map year={2024} />}
 />

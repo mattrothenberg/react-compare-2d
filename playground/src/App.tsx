@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { type Position2D, React2DComparisonSlider } from '../../src'
+import { type Position2D, Compare2D } from '../../src'
 import './basic-styles.css'
 
 export function App() {
@@ -14,7 +14,7 @@ export function App() {
     <div className="p-4">
       <div className="size-64">
         {JSON.stringify(position, null, 2)}
-        <React2DComparisonSlider
+        <Compare2D
           beforeContent={
             <div className="w-full h-full bg-gray-900 flex items-center justify-center">
               <div className="text-white text-center">
