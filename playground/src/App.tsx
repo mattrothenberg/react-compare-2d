@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { type Position2D, Compare2D } from '../../src'
+import { Compare2D, type Position2D } from '../../src'
 import './basic-styles.css'
 
 export function App() {

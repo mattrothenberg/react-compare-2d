@@ -1,1 +1,1 @@
-export { type Position2D, Compare2D } from './slider'
+export { Compare2D, type Position2D } from './slider'

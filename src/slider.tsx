@@ -24,9 +24,7 @@ interface Compare2DProps {
   'aria-labelledby'?: string
 }
 
-export const Compare2D: React.FC<
-  Compare2DProps
-> = ({
+export const Compare2D: React.FC<Compare2DProps> = ({
   beforeImage,
   afterImage,
   beforeContent,
@@ -272,10 +270,7 @@ export const Compare2D: React.FC<
       data-x={Math.round(position.x)}
       data-y={Math.round(position.y)}
     >
-      <div
-        style={clippingContainerStyle}
-        data-compare-2d="clip"
-      >
+      <div style={clippingContainerStyle} data-compare-2d="clip">
         <div
           style={afterContainerStyle}
           data-compare-2d="after-container"

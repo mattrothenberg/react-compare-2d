@@ -10,8 +10,7 @@
   border-radius: 50%;
 }
 
-[data-compare-2d="container"]:focus-within
-  [data-compare-2d="handle"] {
+[data-compare-2d="container"]:focus-within [data-compare-2d="handle"] {
   outline: 4px auto white;
 }
 
