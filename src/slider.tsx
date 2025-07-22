@@ -1,4 +1,5 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react'
+/** biome-ignore-all lint/style/useImportType: Not necessary */
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 export interface Position2D {
   x: number
@@ -21,7 +22,9 @@ interface React2DComparisonSliderProps {
   'aria-labelledby'?: string
 }
 
-export const React2DComparisonSlider: React.FC<React2DComparisonSliderProps> = ({
+export const React2DComparisonSlider: React.FC<
+  React2DComparisonSliderProps
+> = ({
   beforeImage,
   afterImage,
   beforeContent,
@@ -34,109 +37,135 @@ export const React2DComparisonSlider: React.FC<React2DComparisonSliderProps> = (
   className = '',
   style = {},
   'aria-label': ariaLabel = '2D comparison slider',
-  'aria-labelledby': ariaLabelledby
+  'aria-labelledby': ariaLabelledby,
 }) => {
   const [position, setPosition] = useState<Position2D>(initialPosition)
   const [isDragging, setIsDragging] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const handleRef = useRef<HTMLDivElement>(null)
 
-  const updatePosition = useCallback((clientX: number, clientY: number) => {
-    if (!containerRef.current) return
+  const updatePosition = useCallback(
+    (clientX: number, clientY: number) => {
+      if (!containerRef.current) return
 
-    const rect = containerRef.current.getBoundingClientRect()
-    const x = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100))
-    const y = Math.max(0, Math.min(100, ((clientY - rect.top) / rect.height) * 100))
-    
-    const newPosition = { x, y }
-    setPosition(newPosition)
-    onPositionChange?.(newPosition)
-  }, [onPositionChange])
+      const rect = containerRef.current.getBoundingClientRect()
+      const x = Math.max(
+        0,
+        Math.min(100, ((clientX - rect.left) / rect.width) * 100)
+      )
+      const y = Math.max(
+        0,
+        Math.min(100, ((clientY - rect.top) / rect.height) * 100)
+      )
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (disabled) return
-    e.preventDefault()
-    setIsDragging(true)
-    updatePosition(e.clientX, e.clientY)
-  }, [disabled, updatePosition])
+      const newPosition = { x, y }
+      setPosition(newPosition)
+      onPositionChange?.(newPosition)
+    },
+    [onPositionChange]
+  )
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return
-    e.preventDefault()
-    updatePosition(e.clientX, e.clientY)
-  }, [isDragging, updatePosition])
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (disabled) return
+      e.preventDefault()
+      setIsDragging(true)
+      updatePosition(e.clientX, e.clientY)
+    },
+    [disabled, updatePosition]
+  )
+
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging) return
+      e.preventDefault()
+      updatePosition(e.clientX, e.clientY)
+    },
+    [isDragging, updatePosition]
+  )
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false)
   }, [])
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (disabled) return
-    e.preventDefault()
-    setIsDragging(true)
-    const touch = e.touches[0]
-    updatePosition(touch.clientX, touch.clientY)
-  }, [disabled, updatePosition])
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      if (disabled) return
+      e.preventDefault()
+      setIsDragging(true)
+      const touch = e.touches[0]
+      updatePosition(touch.clientX, touch.clientY)
+    },
+    [disabled, updatePosition]
+  )
 
-  const handleTouchMove = useCallback((e: TouchEvent) => {
-    if (!isDragging) return
-    e.preventDefault()
-    const touch = e.touches[0]
-    updatePosition(touch.clientX, touch.clientY)
-  }, [isDragging, updatePosition])
+  const handleTouchMove = useCallback(
+    (e: TouchEvent) => {
+      if (!isDragging) return
+      e.preventDefault()
+      const touch = e.touches[0]
+      updatePosition(touch.clientX, touch.clientY)
+    },
+    [isDragging, updatePosition]
+  )
 
   const handleTouchEnd = useCallback(() => {
     setIsDragging(false)
   }, [])
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (disabled) return
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (disabled) return
 
-    let newX = position.x
-    let newY = position.y
-    const step = e.shiftKey ? 10 : e.altKey ? 0.1 : 1
+      let newX = position.x
+      let newY = position.y
+      const step = e.shiftKey ? 10 : e.altKey ? 0.1 : 1
 
-    switch (e.key) {
-      case 'ArrowLeft':
-        e.preventDefault()
-        newX = Math.max(0, position.x - step)
-        break
-      case 'ArrowRight':
-        e.preventDefault()
-        newX = Math.min(100, position.x + step)
-        break
-      case 'ArrowUp':
-        e.preventDefault()
-        newY = Math.max(0, position.y - step)
-        break
-      case 'ArrowDown':
-        e.preventDefault()
-        newY = Math.min(100, position.y + step)
-        break
-      case 'Home':
-        e.preventDefault()
-        newX = 0
-        newY = 0
-        break
-      case 'End':
-        e.preventDefault()
-        newX = 100
-        newY = 100
-        break
-      default:
-        return
-    }
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault()
+          newX = Math.max(0, position.x - step)
+          break
+        case 'ArrowRight':
+          e.preventDefault()
+          newX = Math.min(100, position.x + step)
+          break
+        case 'ArrowUp':
+          e.preventDefault()
+          newY = Math.max(0, position.y - step)
+          break
+        case 'ArrowDown':
+          e.preventDefault()
+          newY = Math.min(100, position.y + step)
+          break
+        case 'Home':
+          e.preventDefault()
+          newX = 0
+          newY = 0
+          break
+        case 'End':
+          e.preventDefault()
+          newX = 100
+          newY = 100
+          break
+        default:
+          return
+      }
 
-    const newPosition = { x: newX, y: newY }
-    setPosition(newPosition)
-    onPositionChange?.(newPosition)
-  }, [disabled, position, onPositionChange])
+      const newPosition = { x: newX, y: newY }
+      setPosition(newPosition)
+      onPositionChange?.(newPosition)
+    },
+    [disabled, position, onPositionChange]
+  )
 
   useEffect(() => {
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove)
       document.addEventListener('mouseup', handleMouseUp)
-      document.addEventListener('touchmove', handleTouchMove, { passive: false })
+      document.addEventListener('touchmove', handleTouchMove, {
+        passive: false,
+      })
       document.addEventListener('touchend', handleTouchEnd)
     }
 
@@ -146,14 +175,20 @@ export const React2DComparisonSlider: React.FC<React2DComparisonSliderProps> = (
       document.removeEventListener('touchmove', handleTouchMove)
       document.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [isDragging, handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd])
+  }, [
+    isDragging,
+    handleMouseMove,
+    handleMouseUp,
+    handleTouchMove,
+    handleTouchEnd,
+  ])
 
   const containerStyle: React.CSSProperties = {
     position: 'relative',
     width,
     height,
     overflow: 'hidden',
-    ...style
+    ...style,
   }
 
   const beforeContainerStyle: React.CSSProperties = {
@@ -162,7 +197,7 @@ export const React2DComparisonSlider: React.FC<React2DComparisonSliderProps> = (
     left: 0,
     width: '100%',
     height: '100%',
-    clipPath: `polygon(0% 0%, ${position.x}% 0%, ${position.x}% ${position.y}%, 0% ${position.y}%)`
+    clipPath: `polygon(0% 0%, ${position.x}% 0%, ${position.x}% ${position.y}%, 0% ${position.y}%)`,
   }
 
   const afterContainerStyle: React.CSSProperties = {
@@ -170,7 +205,7 @@ export const React2DComparisonSlider: React.FC<React2DComparisonSliderProps> = (
     top: 0,
     left: 0,
     width: '100%',
-    height: '100%'
+    height: '100%',
   }
 
   const handleStyle: React.CSSProperties = {
@@ -178,7 +213,7 @@ export const React2DComparisonSlider: React.FC<React2DComparisonSliderProps> = (
     left: `${position.x}%`,
     top: `${position.y}%`,
     transform: 'translate(-50%, -50%)',
-    zIndex: 10
+    zIndex: 10,
   }
 
   const verticalLineStyle: React.CSSProperties = {
@@ -187,7 +222,7 @@ export const React2DComparisonSlider: React.FC<React2DComparisonSliderProps> = (
     top: 0,
     height: '100%',
     transform: 'translateX(-50%)',
-    zIndex: 5
+    zIndex: 5,
   }
 
   const horizontalLineStyle: React.CSSProperties = {
@@ -196,7 +231,7 @@ export const React2DComparisonSlider: React.FC<React2DComparisonSliderProps> = (
     left: 0,
     width: '100%',
     transform: 'translateY(-50%)',
-    zIndex: 5
+    zIndex: 5,
   }
 
   return (
@@ -216,21 +251,21 @@ export const React2DComparisonSlider: React.FC<React2DComparisonSliderProps> = (
       data-x={Math.round(position.x)}
       data-y={Math.round(position.y)}
     >
-      <div 
+      <div
         style={afterContainerStyle}
         data-react-2d-slider="after-container"
         data-content-type={afterImage ? 'image' : 'custom'}
       >
         {afterImage && (
-          <img 
-            src={afterImage} 
-            alt="After" 
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+          <img
+            src={afterImage}
+            alt="After"
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             data-react-2d-slider="after-image"
           />
         )}
         {afterContent && (
-          <div 
+          <div
             data-react-2d-slider="after-content"
             style={{ width: '100%', height: '100%' }}
           >
@@ -238,22 +273,22 @@ export const React2DComparisonSlider: React.FC<React2DComparisonSliderProps> = (
           </div>
         )}
       </div>
-      
-      <div 
+
+      <div
         style={beforeContainerStyle}
         data-react-2d-slider="before-container"
         data-content-type={beforeImage ? 'image' : 'custom'}
       >
         {beforeImage && (
-          <img 
-            src={beforeImage} 
-            alt="Before" 
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+          <img
+            src={beforeImage}
+            alt="Before"
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             data-react-2d-slider="before-image"
           />
         )}
         {beforeContent && (
-          <div 
+          <div
             data-react-2d-slider="before-content"
             style={{ width: '100%', height: '100%' }}
           >
@@ -262,20 +297,21 @@ export const React2DComparisonSlider: React.FC<React2DComparisonSliderProps> = (
         )}
       </div>
 
-      <div 
-        style={verticalLineStyle} 
+      <div
+        style={verticalLineStyle}
         data-react-2d-slider="line"
         data-orientation="vertical"
         data-x={Math.round(position.x)}
       />
-      <div 
-        style={horizontalLineStyle} 
+      <div
+        style={horizontalLineStyle}
         data-react-2d-slider="line"
         data-orientation="horizontal"
         data-y={Math.round(position.y)}
       />
-      
+
       <div
+        tabIndex={disabled ? -1 : 0}
         ref={handleRef}
         style={handleStyle}
         role="slider"
@@ -290,7 +326,8 @@ export const React2DComparisonSlider: React.FC<React2DComparisonSliderProps> = (
         data-x={Math.round(position.x)}
         data-y={Math.round(position.y)}
       />
-      
+
+      {/** biome-ignore lint/a11y/useFocusableInteractive: Unnecessary */}
       <div
         style={{ ...handleStyle, visibility: 'hidden' }}
         role="slider"

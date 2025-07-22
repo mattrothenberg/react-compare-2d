@@ -9,7 +9,8 @@
   border-radius: 50%;
 }
 
-[data-react-2d-slider="container"]:focus-within [data-react-2d-slider="handle"] {
+[data-react-2d-slider="container"]:focus-within
+  [data-react-2d-slider="handle"] {
   outline: 4px auto white;
 }
 
