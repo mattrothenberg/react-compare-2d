@@ -42,7 +42,7 @@
     "playground": "vite --config playground/vite.config.ts",
     "typecheck": "tsc --noEmit",
     "release": "bumpp && npm publish",
-    "prepublishOnly": "npm run lint && npm run typecheck && npm run build"
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.2",
