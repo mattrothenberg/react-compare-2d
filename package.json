@@ -38,6 +38,7 @@
     "dev": "tsdown --watch",
     "playground": "vite --config playground/vite.config.ts",
     "typecheck": "tsc --noEmit",
+    "publish": "npm run build && npm publish",
     "release": "bumpp && npm run publish",
     "prepublishOnly": "npm run build"
   },
