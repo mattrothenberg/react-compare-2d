@@ -199,8 +199,17 @@ export const React2DComparisonSlider: React.FC<
     position: 'relative',
     width,
     height,
-    overflow: 'hidden',
+    overflow: 'visible',
     ...style,
+  }
+
+  const clippingContainerStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
   }
 
   const beforeContainerStyle: React.CSSProperties = {
@@ -264,63 +273,68 @@ export const React2DComparisonSlider: React.FC<
       data-y={Math.round(position.y)}
     >
       <div
-        style={afterContainerStyle}
-        data-react-2d-slider="after-container"
-        data-content-type={afterImage ? 'image' : 'custom'}
+        style={clippingContainerStyle}
+        data-react-2d-slider="clipping-container"
       >
-        {afterImage && (
-          <img
-            src={afterImage}
-            alt="After"
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            data-react-2d-slider="after-image"
-          />
-        )}
-        {afterContent && (
-          <div
-            data-react-2d-slider="after-content"
-            style={{ width: '100%', height: '100%' }}
-          >
-            {afterContent}
-          </div>
-        )}
-      </div>
+        <div
+          style={afterContainerStyle}
+          data-react-2d-slider="after-container"
+          data-content-type={afterImage ? 'image' : 'custom'}
+        >
+          {afterImage && (
+            <img
+              src={afterImage}
+              alt="After"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              data-react-2d-slider="after-image"
+            />
+          )}
+          {afterContent && (
+            <div
+              data-react-2d-slider="after-content"
+              style={{ width: '100%', height: '100%' }}
+            >
+              {afterContent}
+            </div>
+          )}
+        </div>
 
-      <div
-        style={beforeContainerStyle}
-        data-react-2d-slider="before-container"
-        data-content-type={beforeImage ? 'image' : 'custom'}
-      >
-        {beforeImage && (
-          <img
-            src={beforeImage}
-            alt="Before"
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            data-react-2d-slider="before-image"
-          />
-        )}
-        {beforeContent && (
-          <div
-            data-react-2d-slider="before-content"
-            style={{ width: '100%', height: '100%' }}
-          >
-            {beforeContent}
-          </div>
-        )}
-      </div>
+        <div
+          style={beforeContainerStyle}
+          data-react-2d-slider="before-container"
+          data-content-type={beforeImage ? 'image' : 'custom'}
+        >
+          {beforeImage && (
+            <img
+              src={beforeImage}
+              alt="Before"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              data-react-2d-slider="before-image"
+            />
+          )}
+          {beforeContent && (
+            <div
+              data-react-2d-slider="before-content"
+              style={{ width: '100%', height: '100%' }}
+            >
+              {beforeContent}
+            </div>
+          )}
+        </div>
 
-      <div
-        style={verticalLineStyle}
-        data-react-2d-slider="line"
-        data-orientation="vertical"
-        data-x={Math.round(position.x)}
-      />
-      <div
-        style={horizontalLineStyle}
-        data-react-2d-slider="line"
-        data-orientation="horizontal"
-        data-y={Math.round(position.y)}
-      />
+        <div
+          style={verticalLineStyle}
+          data-react-2d-slider="line"
+          data-orientation="vertical"
+          data-x={Math.round(position.x)}
+        />
+        <div
+          style={horizontalLineStyle}
+          data-react-2d-slider="line"
+          data-orientation="horizontal"
+          data-y={Math.round(position.y)}
+        />
+      </div>
 
       <div
         tabIndex={disabled ? -1 : 0}
