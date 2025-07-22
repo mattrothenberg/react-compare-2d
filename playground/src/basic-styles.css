@@ -1,5 +1,6 @@
 [data-react-2d-slider="container"] {
   border-radius: 0;
+  border: 1px solid black;
 }
 
 [data-react-2d-slider="handle"] {
