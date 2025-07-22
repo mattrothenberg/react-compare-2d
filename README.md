@@ -57,7 +57,7 @@ function MyApp() {
       After State
     </div>
   }
-  initialPosition={{ x: 25, y: 75 }}
+  defaultPosition={{ x: 25, y: 75 }}
   onPositionChange={(pos) => console.log(pos)}
 />
 ```
@@ -73,7 +73,7 @@ function MyApp() {
 | `beforeContent` | `ReactNode` | - | Custom React content for "before" state |
 | `afterContent` | `ReactNode` | - | Custom React content for "after" state |
 | `onPositionChange` | `(position: Position2D) => void` | - | Callback fired when crosshair position changes |
-| `initialPosition` | `Position2D` | `{ x: 50, y: 50 }` | Initial crosshair position (0-100%) |
+| `defaultPosition` | `Position2D` | `{ x: 50, y: 50 }` | Initial crosshair position (0-100%) |
 | `width` | `number \| string` | `"100%"` | Component width |
 | `height` | `number \| string` | `400` | Component height |
 | `disabled` | `boolean` | `false` | Disable interaction |

@@ -14,7 +14,6 @@ interface Compare2DProps {
   onPositionChange?: (position: Position2D) => void
   position?: Position2D
   defaultPosition?: Position2D
-  initialPosition?: Position2D
   width?: number | string
   height?: number | string
   disabled?: boolean
@@ -31,8 +30,7 @@ export const Compare2D: React.FC<Compare2DProps> = ({
   afterContent,
   onPositionChange,
   position: controlledPosition,
-  defaultPosition,
-  initialPosition = { x: 50, y: 50 },
+  defaultPosition = { x: 50, y: 50 },
   width = '100%',
   height = 400,
   disabled = false,
@@ -42,9 +40,8 @@ export const Compare2D: React.FC<Compare2DProps> = ({
   'aria-labelledby': ariaLabelledby,
 }) => {
   const isControlled = controlledPosition !== undefined
-  const [internalPosition, setInternalPosition] = useState<Position2D>(
-    defaultPosition || initialPosition
-  )
+  const [internalPosition, setInternalPosition] =
+    useState<Position2D>(defaultPosition)
   const position = isControlled ? controlledPosition : internalPosition
   const [isDragging, setIsDragging] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
