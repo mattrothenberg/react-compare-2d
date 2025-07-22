@@ -1,8 +1,8 @@
 {
-  "name": "react-components-starter",
-  "version": "0.0.0",
+  "name": "react-compare-2d",
+  "version": "1.0.0",
   "packageManager": "pnpm@10.10.0",
-  "description": "A starter for creating a React component library.",
+  "description": "A React component for creating interactive 2D comparison sliders with multidirectional sliding.",
   "type": "module",
   "license": "MIT",
   "homepage": "https://github.com/gugustinette/react-components-starter#readme",
@@ -43,6 +43,7 @@
   "devDependencies": {
     "@sxzz/eslint-config": "^7.0.1",
     "@sxzz/prettier-config": "^2.2.1",
+    "@tailwindcss/vite": "^4.1.11",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@types/node": "^22.15.17",
@@ -55,6 +56,7 @@
     "prettier": "^3.5.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.11",
     "tsdown": "^0.11.1",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
