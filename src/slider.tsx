@@ -21,6 +21,7 @@ interface Compare2DProps {
   style?: React.CSSProperties
   'aria-label'?: string
   'aria-labelledby'?: string
+  orientation?: 'horizontal' | 'vertical' | '2d'
 }
 
 export const Compare2D: React.FC<Compare2DProps> = ({
@@ -38,6 +39,7 @@ export const Compare2D: React.FC<Compare2DProps> = ({
   style = {},
   'aria-label': ariaLabel = '2D comparison slider',
   'aria-labelledby': ariaLabelledby,
+  orientation = '2d',
 }) => {
   const isControlled = controlledPosition !== undefined
   const [internalPosition, setInternalPosition] =
@@ -52,14 +54,21 @@ export const Compare2D: React.FC<Compare2DProps> = ({
       if (!containerRef.current) return
 
       const rect = containerRef.current.getBoundingClientRect()
-      const x = Math.max(
+      let x = Math.max(
         0,
         Math.min(100, ((clientX - rect.left) / rect.width) * 100)
       )
-      const y = Math.max(
+      let y = Math.max(
         0,
         Math.min(100, ((clientY - rect.top) / rect.height) * 100)
       )
+
+      // Apply orientation constraints
+      if (orientation === 'horizontal') {
+        y = 50 // Fixed at center for horizontal mode
+      } else if (orientation === 'vertical') {
+        x = 50 // Fixed at center for vertical mode
+      }
 
       const newPosition = { x, y }
       if (!isControlled) {
@@ -67,7 +76,7 @@ export const Compare2D: React.FC<Compare2DProps> = ({
       }
       onPositionChange?.(newPosition)
     },
-    [isControlled, onPositionChange]
+    [isControlled, onPositionChange, orientation]
   )
 
   const handleMouseDown = useCallback(
@@ -128,33 +137,60 @@ export const Compare2D: React.FC<Compare2DProps> = ({
 
       switch (e.key) {
         case 'ArrowLeft':
+          if (orientation === 'vertical') return
           e.preventDefault()
           newX = Math.max(0, position.x - step)
           break
         case 'ArrowRight':
+          if (orientation === 'vertical') return
           e.preventDefault()
           newX = Math.min(100, position.x + step)
           break
         case 'ArrowUp':
+          if (orientation === 'horizontal') return
           e.preventDefault()
           newY = Math.max(0, position.y - step)
           break
         case 'ArrowDown':
+          if (orientation === 'horizontal') return
           e.preventDefault()
           newY = Math.min(100, position.y + step)
           break
         case 'Home':
           e.preventDefault()
-          newX = 0
-          newY = 0
+          if (orientation === 'horizontal') {
+            newX = 0
+            newY = 50
+          } else if (orientation === 'vertical') {
+            newX = 50
+            newY = 0
+          } else {
+            newX = 0
+            newY = 0
+          }
           break
         case 'End':
           e.preventDefault()
-          newX = 100
-          newY = 100
+          if (orientation === 'horizontal') {
+            newX = 100
+            newY = 50
+          } else if (orientation === 'vertical') {
+            newX = 50
+            newY = 100
+          } else {
+            newX = 100
+            newY = 100
+          }
           break
         default:
           return
+      }
+
+      // Apply orientation constraints
+      if (orientation === 'horizontal') {
+        newY = 50
+      } else if (orientation === 'vertical') {
+        newX = 50
       }
 
       const newPosition = { x: newX, y: newY }
@@ -163,7 +199,7 @@ export const Compare2D: React.FC<Compare2DProps> = ({
       }
       onPositionChange?.(newPosition)
     },
-    [disabled, position, isControlled, onPositionChange]
+    [disabled, position, isControlled, onPositionChange, orientation]
   )
 
   useEffect(() => {
@@ -207,13 +243,23 @@ export const Compare2D: React.FC<Compare2DProps> = ({
     overflow: 'hidden',
   }
 
+  const getClipPath = () => {
+    if (orientation === 'horizontal') {
+      return `polygon(0% 0%, ${position.x}% 0%, ${position.x}% 100%, 0% 100%)`
+    } else if (orientation === 'vertical') {
+      return `polygon(0% 0%, 100% 0%, 100% ${position.y}%, 0% ${position.y}%)`
+    } else {
+      return `polygon(0% 0%, ${position.x}% 0%, ${position.x}% ${position.y}%, 0% ${position.y}%)`
+    }
+  }
+
   const beforeContainerStyle: React.CSSProperties = {
     position: 'absolute',
     top: 0,
     left: 0,
     width: '100%',
     height: '100%',
-    clipPath: `polygon(0% 0%, ${position.x}% 0%, ${position.x}% ${position.y}%, 0% ${position.y}%)`,
+    clipPath: getClipPath(),
   }
 
   const afterContainerStyle: React.CSSProperties = {
@@ -314,18 +360,22 @@ export const Compare2D: React.FC<Compare2DProps> = ({
           )}
         </div>
 
-        <div
-          style={verticalLineStyle}
-          data-compare-2d="line"
-          data-orientation="vertical"
-          data-x={Math.round(position.x)}
-        />
-        <div
-          style={horizontalLineStyle}
-          data-compare-2d="line"
-          data-orientation="horizontal"
-          data-y={Math.round(position.y)}
-        />
+        {(orientation === 'horizontal' || orientation === '2d') && (
+          <div
+            style={verticalLineStyle}
+            data-compare-2d="line"
+            data-orientation="vertical"
+            data-x={Math.round(position.x)}
+          />
+        )}
+        {(orientation === 'vertical' || orientation === '2d') && (
+          <div
+            style={horizontalLineStyle}
+            data-compare-2d="line"
+            data-orientation="horizontal"
+            data-y={Math.round(position.y)}
+          />
+        )}
       </div>
 
       <div
@@ -333,31 +383,52 @@ export const Compare2D: React.FC<Compare2DProps> = ({
         ref={handleRef}
         style={handleStyle}
         role="slider"
-        aria-label="2D slider handle"
+        aria-label={
+          orientation === 'horizontal' 
+            ? 'Horizontal comparison slider' 
+            : orientation === 'vertical' 
+            ? 'Vertical comparison slider' 
+            : '2D slider handle'
+        }
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-valuenow={Math.round((position.x + position.y) / 2)}
-        aria-valuetext={`X: ${Math.round(position.x)}%, Y: ${Math.round(position.y)}%`}
-        aria-orientation="horizontal"
+        aria-valuenow={
+          orientation === 'horizontal' 
+            ? Math.round(position.x)
+            : orientation === 'vertical'
+            ? Math.round(position.y)
+            : Math.round((position.x + position.y) / 2)
+        }
+        aria-valuetext={
+          orientation === 'horizontal' 
+            ? `${Math.round(position.x)}%`
+            : orientation === 'vertical'
+            ? `${Math.round(position.y)}%`
+            : `X: ${Math.round(position.x)}%, Y: ${Math.round(position.y)}%`
+        }
+        aria-orientation={orientation === '2d' ? 'horizontal' : orientation}
         data-compare-2d="handle"
         data-state={disabled ? 'disabled' : isDragging ? 'dragging' : 'idle'}
+        data-orientation={orientation}
         data-x={Math.round(position.x)}
         data-y={Math.round(position.y)}
       />
 
-      {/** biome-ignore lint/a11y/useFocusableInteractive: Unnecessary */}
-      <div
-        style={{ ...handleStyle, visibility: 'hidden' }}
-        role="slider"
-        aria-label="Y coordinate slider"
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={Math.round(position.y)}
-        aria-valuetext={`Y: ${Math.round(position.y)}%`}
-        aria-orientation="vertical"
-        data-compare-2d="handle-a11y"
-        data-orientation="vertical"
-      />
+      {orientation === '2d' && (
+        /** biome-ignore lint/a11y/useFocusableInteractive: Unnecessary */
+        <div
+          style={{ ...handleStyle, visibility: 'hidden' }}
+          role="slider"
+          aria-label="Y coordinate slider"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(position.y)}
+          aria-valuetext={`Y: ${Math.round(position.y)}%`}
+          aria-orientation="vertical"
+          data-compare-2d="handle-a11y"
+          data-orientation="vertical"
+        />
+      )}
     </div>
   )
 }

@@ -1,10 +1,10 @@
 # react-compare-2d
 
-A React component for creating interactive 2D comparison sliders with multidirectional sliding. Perfect for before/after comparisons, image reveals, and interactive content exploration.
+A React component for creating interactive comparison sliders with support for horizontal, vertical, and 2D sliding modes. Perfect for before/after comparisons, image reveals, and interactive content exploration.
 
 ## Features
 
-- 🎯 **2D multidirectional sliding** - Move crosshair in both X and Y directions
+- 🎯 **Multiple orientations** - Horizontal, vertical, or full 2D sliding
 - 🎨 **Zero dependencies** - Lightweight with no external dependencies
 - ♿ **Fully accessible** - WCAG compliant with keyboard navigation and ARIA support
 - 📱 **Touch/mouse support** - Works on all devices
@@ -38,9 +38,32 @@ function MyApp() {
       onPositionChange={handlePositionChange}
       width={600}
       height={400}
+      orientation="2d" // Default - can be "horizontal", "vertical", or "2d"
     />
   )
 }
+```
+
+### Horizontal Slider (like react-comparison-slider)
+
+```tsx
+<Compare2D
+  beforeImage="/before.jpg"
+  afterImage="/after.jpg"
+  orientation="horizontal"
+  onPositionChange={(pos) => console.log(`Position: ${pos.x}%`)}
+/>
+```
+
+### Vertical Slider
+
+```tsx
+<Compare2D
+  beforeImage="/before.jpg"
+  afterImage="/after.jpg"
+  orientation="vertical"
+  onPositionChange={(pos) => console.log(`Position: ${pos.y}%`)}
+/>
 ```
 
 ### Custom Content
@@ -72,8 +95,9 @@ function MyApp() {
 | `afterImage` | `string` | - | URL for the "after" image |
 | `beforeContent` | `ReactNode` | - | Custom React content for "before" state |
 | `afterContent` | `ReactNode` | - | Custom React content for "after" state |
-| `onPositionChange` | `(position: Position2D) => void` | - | Callback fired when crosshair position changes |
-| `defaultPosition` | `Position2D` | `{ x: 50, y: 50 }` | Initial crosshair position (0-100%) |
+| `onPositionChange` | `(position: Position2D) => void` | - | Callback fired when slider position changes |
+| `defaultPosition` | `Position2D` | `{ x: 50, y: 50 }` | Initial slider position (0-100%) |
+| `orientation` | `'horizontal' \| 'vertical' \| '2d'` | `'2d'` | Slider orientation mode |
 | `width` | `number \| string` | `"100%"` | Component width |
 | `height` | `number \| string` | `400` | Component height |
 | `disabled` | `boolean` | `false` | Disable interaction |
@@ -90,6 +114,27 @@ interface Position2D {
   y: number // Y position as percentage (0-100)
 }
 ```
+
+## Orientation Modes
+
+### Horizontal Mode (`orientation="horizontal"`)
+- Slider moves only left/right
+- Y position is fixed at 50% (center)
+- Shows only vertical divider line
+- Behaves like traditional comparison sliders (e.g., react-comparison-slider)
+- Perfect for before/after image comparisons
+
+### Vertical Mode (`orientation="vertical"`)
+- Slider moves only up/down
+- X position is fixed at 50% (center)
+- Shows only horizontal divider line
+- Great for top/bottom content comparisons
+
+### 2D Mode (`orientation="2d"`) - Default
+- Full 2D movement in both X and Y directions
+- Shows both horizontal and vertical guide lines
+- Crosshair handle allows multidirectional sliding
+- Original behavior of the component
 
 ## Styling
 
@@ -162,7 +207,7 @@ Style any part of the component using data attribute selectors:
 - `[data-state="idle|dragging|disabled"]` - Current interaction state
 - `[data-x="0-100"]` - Current X position (updates live)
 - `[data-y="0-100"]` - Current Y position (updates live)
-- `[data-orientation="horizontal|vertical"]` - Line orientation
+- `[data-orientation="horizontal|vertical|2d"]` - Slider orientation
 - `[data-content-type="image|custom"]` - Content type
 
 ## Accessibility
@@ -170,11 +215,20 @@ Style any part of the component using data attribute selectors:
 The component is fully accessible out of the box:
 
 ### Keyboard Navigation
-- **Arrow keys**: Move crosshair (1% per press)
+- **Arrow keys**: Move slider (1% per press)
+  - Horizontal mode: Left/Right arrows only
+  - Vertical mode: Up/Down arrows only
+  - 2D mode: All arrow keys
 - **Shift + Arrow keys**: Large steps (10% per press)
 - **Alt + Arrow keys**: Fine steps (0.1% per press)
-- **Home**: Move to top-left corner (0%, 0%)
-- **End**: Move to bottom-right corner (100%, 100%)
+- **Home**: Move to start position
+  - Horizontal: Left edge (0%, 50%)
+  - Vertical: Top edge (50%, 0%)
+  - 2D: Top-left corner (0%, 0%)
+- **End**: Move to end position
+  - Horizontal: Right edge (100%, 50%)
+  - Vertical: Bottom edge (50%, 100%)
+  - 2D: Bottom-right corner (100%, 100%)
 
 ### Screen Reader Support
 - Proper ARIA roles and attributes
