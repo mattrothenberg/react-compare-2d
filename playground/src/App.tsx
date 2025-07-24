@@ -1,11 +1,23 @@
 import { useState } from 'react'
-import { Compare2D, type Position2D } from '../../src'
+import { 
+  Compare2D, 
+  type PositionHorizontal, 
+  type PositionVertical, 
+  type Position2D 
+} from '../../src'
 import './basic-styles.css'
 
 export function App() {
-  const [horizontalPosition, setHorizontalPosition] = useState<Position2D>({ x: 75, y: 50 })
-  const [verticalPosition, setVerticalPosition] = useState<Position2D>({ x: 50, y: 25 })
+  // Each position type only contains the relevant properties for type safety
+  const [horizontalPosition, setHorizontalPosition] = useState<PositionHorizontal>({ x: 75 })
+  const [verticalPosition, setVerticalPosition] = useState<PositionVertical>({ y: 25 })
   const [twoDPosition, setTwoDPosition] = useState<Position2D>({ x: 75, y: 75 })
+
+  // TypeScript prevents accessing irrelevant properties:
+  // horizontalPosition.y ❌ - TypeScript error, y doesn't exist on PositionHorizontal
+  // verticalPosition.x ❌ - TypeScript error, x doesn't exist on PositionVertical
+  // twoDPosition.x ✅ - Both x and y are available on Position2D
+  // twoDPosition.y ✅
 
   return (
     <div className="p-8 space-y-8">
@@ -36,7 +48,7 @@ export function App() {
             orientation="horizontal"
           />
         </div>
-        <p className="mt-2 text-sm text-gray-600">Position: {horizontalPosition.x.toFixed(0)}%</p>
+        <p className="mt-2 text-sm text-gray-600">Position: {horizontalPosition.x.toFixed(0)}% (X only)</p>
       </div>
 
       <div>
@@ -66,7 +78,7 @@ export function App() {
             orientation="vertical"
           />
         </div>
-        <p className="mt-2 text-sm text-gray-600">Position: {verticalPosition.y.toFixed(0)}%</p>
+        <p className="mt-2 text-sm text-gray-600">Position: {verticalPosition.y.toFixed(0)}% (Y only)</p>
       </div>
 
       <div>
@@ -96,7 +108,7 @@ export function App() {
             orientation="2d"
           />
         </div>
-        <p className="mt-2 text-sm text-gray-600">Position: X: {twoDPosition.x.toFixed(0)}%, Y: {twoDPosition.y.toFixed(0)}%</p>
+        <p className="mt-2 text-sm text-gray-600">Position: X: {twoDPosition.x.toFixed(0)}%, Y: {twoDPosition.y.toFixed(0)}% (Both X & Y)</p>
       </div>
     </div>
   )

@@ -47,42 +47,80 @@ function MyApp() {
 ### Horizontal Slider (like react-comparison-slider)
 
 ```tsx
-<Compare2D
-  beforeImage="/before.jpg"
-  afterImage="/after.jpg"
-  orientation="horizontal"
-  onPositionChange={(pos) => console.log(`Position: ${pos.x}%`)}
-/>
+import { Compare2D, type PositionHorizontal } from 'react-compare-2d'
+
+function HorizontalExample() {
+  const [position, setPosition] = useState<PositionHorizontal>({ x: 50 })
+  
+  return (
+    <Compare2D
+      beforeImage="/before.jpg"
+      afterImage="/after.jpg"
+      orientation="horizontal"
+      position={position}
+      onPositionChange={(pos) => {
+        console.log(`Position: ${pos.x}%`) // ✅ Only x is available
+        // console.log(pos.y) // ❌ TypeScript error - y doesn't exist
+        setPosition(pos)
+      }}
+    />
+  )
+}
 ```
 
 ### Vertical Slider
 
 ```tsx
-<Compare2D
-  beforeImage="/before.jpg"
-  afterImage="/after.jpg"
-  orientation="vertical"
-  onPositionChange={(pos) => console.log(`Position: ${pos.y}%`)}
-/>
+import { Compare2D, type PositionVertical } from 'react-compare-2d'
+
+function VerticalExample() {
+  const [position, setPosition] = useState<PositionVertical>({ y: 50 })
+  
+  return (
+    <Compare2D
+      beforeImage="/before.jpg"
+      afterImage="/after.jpg"
+      orientation="vertical"
+      position={position}
+      onPositionChange={(pos) => {
+        console.log(`Position: ${pos.y}%`) // ✅ Only y is available
+        // console.log(pos.x) // ❌ TypeScript error - x doesn't exist
+        setPosition(pos)
+      }}
+    />
+  )
+}
 ```
 
-### Custom Content
+### Custom Content (2D Mode)
 
 ```tsx
-<Compare2D
-  beforeContent={
-    <div style={{ background: '#000', color: '#fff', width: '100%', height: '100%' }}>
-      Before State
-    </div>
-  }
-  afterContent={
-    <div style={{ background: '#fff', color: '#000', width: '100%', height: '100%' }}>
-      After State
-    </div>
-  }
-  defaultPosition={{ x: 25, y: 75 }}
-  onPositionChange={(pos) => console.log(pos)}
-/>
+import { Compare2D, type Position2D } from 'react-compare-2d'
+
+function CustomContentExample() {
+  const [position, setPosition] = useState<Position2D>({ x: 25, y: 75 })
+  
+  return (
+    <Compare2D
+      beforeContent={
+        <div style={{ background: '#000', color: '#fff', width: '100%', height: '100%' }}>
+          Before State
+        </div>
+      }
+      afterContent={
+        <div style={{ background: '#fff', color: '#000', width: '100%', height: '100%' }}>
+          After State
+        </div>
+      }
+      position={position}
+      orientation="2d" // Default
+      onPositionChange={(pos) => {
+        console.log(`X: ${pos.x}%, Y: ${pos.y}%`) // ✅ Both x and y available
+        setPosition(pos)
+      }}
+    />
+  )
+}
 ```
 
 ## API Reference
@@ -108,11 +146,53 @@ function MyApp() {
 
 ### Types
 
+The component uses conditional types to ensure type safety based on orientation:
+
 ```tsx
-interface Position2D {
-  x: number // X position as percentage (0-100)
-  y: number // Y position as percentage (0-100)
-}
+// Position types based on orientation
+type PositionHorizontal = { x: number }  
+type PositionVertical = { y: number }
+type Position2D = { x: number; y: number }
+
+// Conditional type that returns the appropriate position type
+type PositionForOrientation<T extends 'horizontal' | 'vertical' | '2d'> = 
+  T extends 'horizontal' ? PositionHorizontal :
+  T extends 'vertical' ? PositionVertical :
+  Position2D
+```
+
+**Type Safety Benefits:**
+- ✅ `PositionHorizontal` only has `x` property
+- ✅ `PositionVertical` only has `y` property  
+- ✅ `Position2D` has both `x` and `y` properties
+- ❌ TypeScript prevents accessing non-existent properties
+
+### Generic Type Usage
+
+The component is fully generic, allowing for automatic type inference:
+
+```tsx
+// TypeScript automatically infers the correct position type
+const horizontalSlider = (
+  <Compare2D 
+    orientation="horizontal" // TypeScript knows callbacks receive { x: number }
+    onPositionChange={(pos) => console.log(pos.x)} // ✅ pos is PositionHorizontal
+  />
+)
+
+const verticalSlider = (
+  <Compare2D 
+    orientation="vertical" // TypeScript knows callbacks receive { y: number }
+    onPositionChange={(pos) => console.log(pos.y)} // ✅ pos is PositionVertical
+  />
+)
+
+const twoDSlider = (
+  <Compare2D 
+    orientation="2d" // TypeScript knows callbacks receive { x: number, y: number }
+    onPositionChange={(pos) => console.log(pos.x, pos.y)} // ✅ pos is Position2D
+  />
+)
 ```
 
 ## Orientation Modes

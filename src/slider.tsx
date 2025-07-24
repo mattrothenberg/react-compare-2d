@@ -1,19 +1,68 @@
 /** biome-ignore-all lint/style/useImportType: Not necessary */
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
-export interface Position2D {
-  x: number
-  y: number
+// Position types based on orientation
+export type PositionHorizontal = { x: number }
+export type PositionVertical = { y: number }
+export type Position2D = { x: number; y: number }
+
+// Conditional type that returns the appropriate position type based on orientation
+export type PositionForOrientation<T extends 'horizontal' | 'vertical' | '2d'> = 
+  T extends 'horizontal' ? PositionHorizontal :
+  T extends 'vertical' ? PositionVertical :
+  Position2D
+
+// Helper functions to handle position conversions
+const getDefaultPosition = <T extends 'horizontal' | 'vertical' | '2d'>(
+  orientation: T,
+  userDefault?: PositionForOrientation<T>
+): Position2D => {
+  if (userDefault) {
+    // Convert user-provided position to full Position2D
+    if (orientation === 'horizontal') {
+      return { x: (userDefault as PositionHorizontal).x, y: 50 }
+    } else if (orientation === 'vertical') {
+      return { x: 50, y: (userDefault as PositionVertical).y }
+    } else {
+      return userDefault as Position2D
+    }
+  }
+  
+  // Default positions based on orientation
+  switch (orientation) {
+    case 'horizontal':
+      return { x: 50, y: 50 }
+    case 'vertical':
+      return { x: 50, y: 50 }
+    case '2d':
+    default:
+      return { x: 50, y: 50 }
+  }
 }
 
-interface Compare2DProps {
+const getPositionForOrientation = <T extends 'horizontal' | 'vertical' | '2d'>(
+  fullPosition: Position2D,
+  orientation: T
+): PositionForOrientation<T> => {
+  switch (orientation) {
+    case 'horizontal':
+      return { x: fullPosition.x } as PositionForOrientation<T>
+    case 'vertical':
+      return { y: fullPosition.y } as PositionForOrientation<T>
+    case '2d':
+    default:
+      return fullPosition as PositionForOrientation<T>
+  }
+}
+
+interface Compare2DProps<T extends 'horizontal' | 'vertical' | '2d' = '2d'> {
   beforeImage?: string
   afterImage?: string
   beforeContent?: React.ReactNode
   afterContent?: React.ReactNode
-  onPositionChange?: (position: Position2D) => void
-  position?: Position2D
-  defaultPosition?: Position2D
+  onPositionChange?: (position: PositionForOrientation<T>) => void
+  position?: PositionForOrientation<T>
+  defaultPosition?: PositionForOrientation<T>
   width?: number | string
   height?: number | string
   disabled?: boolean
@@ -21,17 +70,17 @@ interface Compare2DProps {
   style?: React.CSSProperties
   'aria-label'?: string
   'aria-labelledby'?: string
-  orientation?: 'horizontal' | 'vertical' | '2d'
+  orientation?: T
 }
 
-export const Compare2D: React.FC<Compare2DProps> = ({
+export const Compare2D = <T extends 'horizontal' | 'vertical' | '2d' = '2d'>({
   beforeImage,
   afterImage,
   beforeContent,
   afterContent,
   onPositionChange,
   position: controlledPosition,
-  defaultPosition = { x: 50, y: 50 },
+  defaultPosition,
   width = '100%',
   height = 400,
   disabled = false,
@@ -39,12 +88,20 @@ export const Compare2D: React.FC<Compare2DProps> = ({
   style = {},
   'aria-label': ariaLabel = '2D comparison slider',
   'aria-labelledby': ariaLabelledby,
-  orientation = '2d',
-}) => {
+  orientation = '2d' as T,
+}: Compare2DProps<T>) => {
+  // Convert the controlled position to full Position2D if provided
+  const fullControlledPosition = controlledPosition 
+    ? getDefaultPosition(orientation, controlledPosition)
+    : undefined
+  
   const isControlled = controlledPosition !== undefined
-  const [internalPosition, setInternalPosition] =
-    useState<Position2D>(defaultPosition)
-  const position = isControlled ? controlledPosition : internalPosition
+  const [internalPosition, setInternalPosition] = useState<Position2D>(
+    getDefaultPosition(orientation, defaultPosition)
+  )
+  
+  // Use full Position2D internally for all calculations
+  const fullPosition = isControlled ? fullControlledPosition! : internalPosition
   const [isDragging, setIsDragging] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const handleRef = useRef<HTMLDivElement>(null)
@@ -74,7 +131,8 @@ export const Compare2D: React.FC<Compare2DProps> = ({
       if (!isControlled) {
         setInternalPosition(newPosition)
       }
-      onPositionChange?.(newPosition)
+      // Only call callback with position data relevant to the orientation
+      onPositionChange?.(getPositionForOrientation(newPosition, orientation))
     },
     [isControlled, onPositionChange, orientation]
   )
@@ -131,30 +189,30 @@ export const Compare2D: React.FC<Compare2DProps> = ({
     (e: React.KeyboardEvent) => {
       if (disabled) return
 
-      let newX = position.x
-      let newY = position.y
+      let newX = fullPosition.x
+      let newY = fullPosition.y
       const step = e.shiftKey ? 10 : e.altKey ? 0.1 : 1
 
       switch (e.key) {
         case 'ArrowLeft':
           if (orientation === 'vertical') return
           e.preventDefault()
-          newX = Math.max(0, position.x - step)
+          newX = Math.max(0, fullPosition.x - step)
           break
         case 'ArrowRight':
           if (orientation === 'vertical') return
           e.preventDefault()
-          newX = Math.min(100, position.x + step)
+          newX = Math.min(100, fullPosition.x + step)
           break
         case 'ArrowUp':
           if (orientation === 'horizontal') return
           e.preventDefault()
-          newY = Math.max(0, position.y - step)
+          newY = Math.max(0, fullPosition.y - step)
           break
         case 'ArrowDown':
           if (orientation === 'horizontal') return
           e.preventDefault()
-          newY = Math.min(100, position.y + step)
+          newY = Math.min(100, fullPosition.y + step)
           break
         case 'Home':
           e.preventDefault()
@@ -197,9 +255,10 @@ export const Compare2D: React.FC<Compare2DProps> = ({
       if (!isControlled) {
         setInternalPosition(newPosition)
       }
-      onPositionChange?.(newPosition)
+      // Only call callback with position data relevant to the orientation
+      onPositionChange?.(getPositionForOrientation(newPosition, orientation))
     },
-    [disabled, position, isControlled, onPositionChange, orientation]
+    [disabled, fullPosition, isControlled, onPositionChange, orientation]
   )
 
   useEffect(() => {
@@ -245,11 +304,11 @@ export const Compare2D: React.FC<Compare2DProps> = ({
 
   const getClipPath = () => {
     if (orientation === 'horizontal') {
-      return `polygon(0% 0%, ${position.x}% 0%, ${position.x}% 100%, 0% 100%)`
+      return `polygon(0% 0%, ${fullPosition.x}% 0%, ${fullPosition.x}% 100%, 0% 100%)`
     } else if (orientation === 'vertical') {
-      return `polygon(0% 0%, 100% 0%, 100% ${position.y}%, 0% ${position.y}%)`
+      return `polygon(0% 0%, 100% 0%, 100% ${fullPosition.y}%, 0% ${fullPosition.y}%)`
     } else {
-      return `polygon(0% 0%, ${position.x}% 0%, ${position.x}% ${position.y}%, 0% ${position.y}%)`
+      return `polygon(0% 0%, ${fullPosition.x}% 0%, ${fullPosition.x}% ${fullPosition.y}%, 0% ${fullPosition.y}%)`
     }
   }
 
@@ -272,15 +331,15 @@ export const Compare2D: React.FC<Compare2DProps> = ({
 
   const handleStyle: React.CSSProperties = {
     position: 'absolute',
-    left: `${position.x}%`,
-    top: `${position.y}%`,
+    left: `${fullPosition.x}%`,
+    top: `${fullPosition.y}%`,
     transform: 'translate(-50%, -50%)',
     zIndex: 10,
   }
 
   const verticalLineStyle: React.CSSProperties = {
     position: 'absolute',
-    left: `${position.x}%`,
+    left: `${fullPosition.x}%`,
     top: 0,
     height: '100%',
     transform: 'translateX(-50%)',
@@ -289,7 +348,7 @@ export const Compare2D: React.FC<Compare2DProps> = ({
 
   const horizontalLineStyle: React.CSSProperties = {
     position: 'absolute',
-    top: `${position.y}%`,
+    top: `${fullPosition.y}%`,
     left: 0,
     width: '100%',
     transform: 'translateY(-50%)',
@@ -310,8 +369,8 @@ export const Compare2D: React.FC<Compare2DProps> = ({
       onKeyDown={handleKeyDown}
       data-compare-2d="container"
       data-state={disabled ? 'disabled' : isDragging ? 'dragging' : 'idle'}
-      data-x={Math.round(position.x)}
-      data-y={Math.round(position.y)}
+      data-x={Math.round(fullPosition.x)}
+      data-y={Math.round(fullPosition.y)}
     >
       <div style={clippingContainerStyle} data-compare-2d="clip">
         <div
@@ -365,7 +424,7 @@ export const Compare2D: React.FC<Compare2DProps> = ({
             style={verticalLineStyle}
             data-compare-2d="line"
             data-orientation="vertical"
-            data-x={Math.round(position.x)}
+            data-x={Math.round(fullPosition.x)}
           />
         )}
         {(orientation === 'vertical' || orientation === '2d') && (
@@ -373,7 +432,7 @@ export const Compare2D: React.FC<Compare2DProps> = ({
             style={horizontalLineStyle}
             data-compare-2d="line"
             data-orientation="horizontal"
-            data-y={Math.round(position.y)}
+            data-y={Math.round(fullPosition.y)}
           />
         )}
       </div>
@@ -394,24 +453,24 @@ export const Compare2D: React.FC<Compare2DProps> = ({
         aria-valuemax={100}
         aria-valuenow={
           orientation === 'horizontal' 
-            ? Math.round(position.x)
+            ? Math.round(fullPosition.x)
             : orientation === 'vertical'
-            ? Math.round(position.y)
-            : Math.round((position.x + position.y) / 2)
+            ? Math.round(fullPosition.y)
+            : Math.round((fullPosition.x + fullPosition.y) / 2)
         }
         aria-valuetext={
           orientation === 'horizontal' 
-            ? `${Math.round(position.x)}%`
+            ? `${Math.round(fullPosition.x)}%`
             : orientation === 'vertical'
-            ? `${Math.round(position.y)}%`
-            : `X: ${Math.round(position.x)}%, Y: ${Math.round(position.y)}%`
+            ? `${Math.round(fullPosition.y)}%`
+            : `X: ${Math.round(fullPosition.x)}%, Y: ${Math.round(fullPosition.y)}%`
         }
         aria-orientation={orientation === '2d' ? 'horizontal' : orientation}
         data-compare-2d="handle"
         data-state={disabled ? 'disabled' : isDragging ? 'dragging' : 'idle'}
         data-orientation={orientation}
-        data-x={Math.round(position.x)}
-        data-y={Math.round(position.y)}
+        data-x={Math.round(fullPosition.x)}
+        data-y={Math.round(fullPosition.y)}
       />
 
       {orientation === '2d' && (
@@ -422,8 +481,8 @@ export const Compare2D: React.FC<Compare2DProps> = ({
           aria-label="Y coordinate slider"
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-valuenow={Math.round(position.y)}
-          aria-valuetext={`Y: ${Math.round(position.y)}%`}
+          aria-valuenow={Math.round(fullPosition.y)}
+          aria-valuetext={`Y: ${Math.round(fullPosition.y)}%`}
           aria-orientation="vertical"
           data-compare-2d="handle-a11y"
           data-orientation="vertical"
