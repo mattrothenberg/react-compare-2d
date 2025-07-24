@@ -7,10 +7,12 @@ export type PositionVertical = { y: number }
 export type Position2D = { x: number; y: number }
 
 // Conditional type that returns the appropriate position type based on orientation
-export type PositionForOrientation<T extends 'horizontal' | 'vertical' | '2d'> = 
-  T extends 'horizontal' ? PositionHorizontal :
-  T extends 'vertical' ? PositionVertical :
-  Position2D
+export type PositionForOrientation<T extends 'horizontal' | 'vertical' | '2d'> =
+  T extends 'horizontal'
+    ? PositionHorizontal
+    : T extends 'vertical'
+      ? PositionVertical
+      : Position2D
 
 // Helper functions to handle position conversions
 const getDefaultPosition = <T extends 'horizontal' | 'vertical' | '2d'>(
@@ -27,14 +29,13 @@ const getDefaultPosition = <T extends 'horizontal' | 'vertical' | '2d'>(
       return userDefault as Position2D
     }
   }
-  
+
   // Default positions based on orientation
   switch (orientation) {
     case 'horizontal':
       return { x: 50, y: 50 }
     case 'vertical':
       return { x: 50, y: 50 }
-    case '2d':
     default:
       return { x: 50, y: 50 }
   }
@@ -49,7 +50,6 @@ const getPositionForOrientation = <T extends 'horizontal' | 'vertical' | '2d'>(
       return { x: fullPosition.x } as PositionForOrientation<T>
     case 'vertical':
       return { y: fullPosition.y } as PositionForOrientation<T>
-    case '2d':
     default:
       return fullPosition as PositionForOrientation<T>
   }
@@ -91,15 +91,15 @@ export const Compare2D = <T extends 'horizontal' | 'vertical' | '2d' = '2d'>({
   orientation = '2d' as T,
 }: Compare2DProps<T>) => {
   // Convert the controlled position to full Position2D if provided
-  const fullControlledPosition = controlledPosition 
+  const fullControlledPosition = controlledPosition
     ? getDefaultPosition(orientation, controlledPosition)
     : undefined
-  
+
   const isControlled = controlledPosition !== undefined
   const [internalPosition, setInternalPosition] = useState<Position2D>(
     getDefaultPosition(orientation, defaultPosition)
   )
-  
+
   // Use full Position2D internally for all calculations
   const fullPosition = isControlled ? fullControlledPosition! : internalPosition
   const [isDragging, setIsDragging] = useState(false)
@@ -443,27 +443,27 @@ export const Compare2D = <T extends 'horizontal' | 'vertical' | '2d' = '2d'>({
         style={handleStyle}
         role="slider"
         aria-label={
-          orientation === 'horizontal' 
-            ? 'Horizontal comparison slider' 
-            : orientation === 'vertical' 
-            ? 'Vertical comparison slider' 
-            : '2D slider handle'
+          orientation === 'horizontal'
+            ? 'Horizontal comparison slider'
+            : orientation === 'vertical'
+              ? 'Vertical comparison slider'
+              : '2D slider handle'
         }
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={
-          orientation === 'horizontal' 
+          orientation === 'horizontal'
             ? Math.round(fullPosition.x)
             : orientation === 'vertical'
-            ? Math.round(fullPosition.y)
-            : Math.round((fullPosition.x + fullPosition.y) / 2)
+              ? Math.round(fullPosition.y)
+              : Math.round((fullPosition.x + fullPosition.y) / 2)
         }
         aria-valuetext={
-          orientation === 'horizontal' 
+          orientation === 'horizontal'
             ? `${Math.round(fullPosition.x)}%`
             : orientation === 'vertical'
-            ? `${Math.round(fullPosition.y)}%`
-            : `X: ${Math.round(fullPosition.x)}%, Y: ${Math.round(fullPosition.y)}%`
+              ? `${Math.round(fullPosition.y)}%`
+              : `X: ${Math.round(fullPosition.x)}%, Y: ${Math.round(fullPosition.y)}%`
         }
         aria-orientation={orientation === '2d' ? 'horizontal' : orientation}
         data-compare-2d="handle"
