@@ -1,10 +1,10 @@
 # react-compare-2d
 
-A React component for creating interactive 2D comparison sliders with multidirectional sliding. Perfect for before/after comparisons, image reveals, and interactive content exploration.
+A React component for creating interactive comparison sliders with support for horizontal, vertical, and 2D sliding modes. Perfect for before/after comparisons, image reveals, and interactive content exploration.
 
 ## Features
 
-- 🎯 **2D multidirectional sliding** - Move crosshair in both X and Y directions
+- 🎯 **Multiple orientations** - Horizontal, vertical, or full 2D sliding
 - 🎨 **Zero dependencies** - Lightweight with no external dependencies
 - ♿ **Fully accessible** - WCAG compliant with keyboard navigation and ARIA support
 - 📱 **Touch/mouse support** - Works on all devices
@@ -38,28 +38,89 @@ function MyApp() {
       onPositionChange={handlePositionChange}
       width={600}
       height={400}
+      orientation="2d" // Default - can be "horizontal", "vertical", or "2d"
     />
   )
 }
 ```
 
-### Custom Content
+### Horizontal Slider (like react-comparison-slider)
 
 ```tsx
-<Compare2D
-  beforeContent={
-    <div style={{ background: '#000', color: '#fff', width: '100%', height: '100%' }}>
-      Before State
-    </div>
-  }
-  afterContent={
-    <div style={{ background: '#fff', color: '#000', width: '100%', height: '100%' }}>
-      After State
-    </div>
-  }
-  defaultPosition={{ x: 25, y: 75 }}
-  onPositionChange={(pos) => console.log(pos)}
-/>
+import { Compare2D, type PositionHorizontal } from 'react-compare-2d'
+
+function HorizontalExample() {
+  const [position, setPosition] = useState<PositionHorizontal>({ x: 50 })
+  
+  return (
+    <Compare2D
+      beforeImage="/before.jpg"
+      afterImage="/after.jpg"
+      orientation="horizontal"
+      position={position}
+      onPositionChange={(pos) => {
+        console.log(`Position: ${pos.x}%`) // ✅ Only x is available
+        // console.log(pos.y) // ❌ TypeScript error - y doesn't exist
+        setPosition(pos)
+      }}
+    />
+  )
+}
+```
+
+### Vertical Slider
+
+```tsx
+import { Compare2D, type PositionVertical } from 'react-compare-2d'
+
+function VerticalExample() {
+  const [position, setPosition] = useState<PositionVertical>({ y: 50 })
+  
+  return (
+    <Compare2D
+      beforeImage="/before.jpg"
+      afterImage="/after.jpg"
+      orientation="vertical"
+      position={position}
+      onPositionChange={(pos) => {
+        console.log(`Position: ${pos.y}%`) // ✅ Only y is available
+        // console.log(pos.x) // ❌ TypeScript error - x doesn't exist
+        setPosition(pos)
+      }}
+    />
+  )
+}
+```
+
+### Custom Content (2D Mode)
+
+```tsx
+import { Compare2D, type Position2D } from 'react-compare-2d'
+
+function CustomContentExample() {
+  const [position, setPosition] = useState<Position2D>({ x: 25, y: 75 })
+  
+  return (
+    <Compare2D
+      beforeContent={
+        <div style={{ background: '#000', color: '#fff', width: '100%', height: '100%' }}>
+          Before State
+        </div>
+      }
+      afterContent={
+        <div style={{ background: '#fff', color: '#000', width: '100%', height: '100%' }}>
+          After State
+        </div>
+      }
+      position={position}
+      orientation="2d" // Default
+      onPositionChange={(pos) => {
+        console.log(`X: ${pos.x}%, Y: ${pos.y}%`) // ✅ Both x and y available
+        setPosition(pos)
+      }}
+    />
+  )
+}
 ```
 
 ## API Reference
@@ -72,8 +133,9 @@ function MyApp() {
 | `afterImage` | `string` | - | URL for the "after" image |
 | `beforeContent` | `ReactNode` | - | Custom React content for "before" state |
 | `afterContent` | `ReactNode` | - | Custom React content for "after" state |
-| `onPositionChange` | `(position: Position2D) => void` | - | Callback fired when crosshair position changes |
-| `defaultPosition` | `Position2D` | `{ x: 50, y: 50 }` | Initial crosshair position (0-100%) |
+| `onPositionChange` | `(position: Position2D) => void` | - | Callback fired when slider position changes |
+| `defaultPosition` | `Position2D` | `{ x: 50, y: 50 }` | Initial slider position (0-100%) |
+| `orientation` | `'horizontal' \| 'vertical' \| '2d'` | `'2d'` | Slider orientation mode |
 | `width` | `number \| string` | `"100%"` | Component width |
 | `height` | `number \| string` | `400` | Component height |
 | `disabled` | `boolean` | `false` | Disable interaction |
@@ -84,12 +146,75 @@ function MyApp() {
 
 ### Types
 
+The component uses conditional types to ensure type safety based on orientation:
+
 ```tsx
-interface Position2D {
-  x: number // X position as percentage (0-100)
-  y: number // Y position as percentage (0-100)
-}
+// Position types based on orientation
+type PositionHorizontal = { x: number }  
+type PositionVertical = { y: number }
+type Position2D = { x: number; y: number }
+
+// Conditional type that returns the appropriate position type
+type PositionForOrientation<T extends 'horizontal' | 'vertical' | '2d'> = 
+  T extends 'horizontal' ? PositionHorizontal :
+  T extends 'vertical' ? PositionVertical :
+  Position2D
 ```
+
+**Type Safety Benefits:**
+- ✅ `PositionHorizontal` only has `x` property
+- ✅ `PositionVertical` only has `y` property  
+- ✅ `Position2D` has both `x` and `y` properties
+- ❌ TypeScript prevents accessing non-existent properties
+
+### Generic Type Usage
+
+The component is fully generic, allowing for automatic type inference:
+
+```tsx
+// TypeScript automatically infers the correct position type
+const horizontalSlider = (
+  <Compare2D 
+    orientation="horizontal" // TypeScript knows callbacks receive { x: number }
+    onPositionChange={(pos) => console.log(pos.x)} // ✅ pos is PositionHorizontal
+  />
+)
+
+const verticalSlider = (
+  <Compare2D 
+    orientation="vertical" // TypeScript knows callbacks receive { y: number }
+    onPositionChange={(pos) => console.log(pos.y)} // ✅ pos is PositionVertical
+  />
+)
+
+const twoDSlider = (
+  <Compare2D 
+    orientation="2d" // TypeScript knows callbacks receive { x: number, y: number }
+    onPositionChange={(pos) => console.log(pos.x, pos.y)} // ✅ pos is Position2D
+  />
+)
+```
+
+## Orientation Modes
+
+### Horizontal Mode (`orientation="horizontal"`)
+- Slider moves only left/right
+- Y position is fixed at 50% (center)
+- Shows only vertical divider line
+- Behaves like traditional comparison sliders (e.g., react-comparison-slider)
+- Perfect for before/after image comparisons
+
+### Vertical Mode (`orientation="vertical"`)
+- Slider moves only up/down
+- X position is fixed at 50% (center)
+- Shows only horizontal divider line
+- Great for top/bottom content comparisons
+
+### 2D Mode (`orientation="2d"`) - Default
+- Full 2D movement in both X and Y directions
+- Shows both horizontal and vertical guide lines
+- Crosshair handle allows multidirectional sliding
+- Original behavior of the component
 
 ## Styling
 
@@ -162,7 +287,7 @@ Style any part of the component using data attribute selectors:
 - `[data-state="idle|dragging|disabled"]` - Current interaction state
 - `[data-x="0-100"]` - Current X position (updates live)
 - `[data-y="0-100"]` - Current Y position (updates live)
-- `[data-orientation="horizontal|vertical"]` - Line orientation
+- `[data-orientation="horizontal|vertical|2d"]` - Slider orientation
 - `[data-content-type="image|custom"]` - Content type
 
 ## Accessibility
@@ -170,11 +295,20 @@ Style any part of the component using data attribute selectors:
 The component is fully accessible out of the box:
 
 ### Keyboard Navigation
-- **Arrow keys**: Move crosshair (1% per press)
+- **Arrow keys**: Move slider (1% per press)
+  - Horizontal mode: Left/Right arrows only
+  - Vertical mode: Up/Down arrows only
+  - 2D mode: All arrow keys
 - **Shift + Arrow keys**: Large steps (10% per press)
 - **Alt + Arrow keys**: Fine steps (0.1% per press)
-- **Home**: Move to top-left corner (0%, 0%)
-- **End**: Move to bottom-right corner (100%, 100%)
+- **Home**: Move to start position
+  - Horizontal: Left edge (0%, 50%)
+  - Vertical: Top edge (50%, 0%)
+  - 2D: Top-left corner (0%, 0%)
+- **End**: Move to end position
+  - Horizontal: Right edge (100%, 50%)
+  - Vertical: Bottom edge (50%, 100%)
+  - 2D: Bottom-right corner (100%, 100%)
 
 ### Screen Reader Support
 - Proper ARIA roles and attributes
