@@ -1,68 +1,16 @@
 /** biome-ignore-all lint/style/useImportType: Not necessary */
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
-// Position types based on orientation
-export type PositionHorizontal = { x: number }
-export type PositionVertical = { y: number }
 export type Position2D = { x: number; y: number }
 
-// Conditional type that returns the appropriate position type based on orientation
-export type PositionForOrientation<T extends 'horizontal' | 'vertical' | '2d'> =
-  T extends 'horizontal'
-    ? PositionHorizontal
-    : T extends 'vertical'
-      ? PositionVertical
-      : Position2D
-
-// Helper functions to handle position conversions
-const getDefaultPosition = <T extends 'horizontal' | 'vertical' | '2d'>(
-  orientation: T,
-  userDefault?: PositionForOrientation<T>
-): Position2D => {
-  if (userDefault) {
-    // Convert user-provided position to full Position2D
-    if (orientation === 'horizontal') {
-      return { x: (userDefault as PositionHorizontal).x, y: 50 }
-    } else if (orientation === 'vertical') {
-      return { x: 50, y: (userDefault as PositionVertical).y }
-    } else {
-      return userDefault as Position2D
-    }
-  }
-
-  // Default positions based on orientation
-  switch (orientation) {
-    case 'horizontal':
-      return { x: 50, y: 50 }
-    case 'vertical':
-      return { x: 50, y: 50 }
-    default:
-      return { x: 50, y: 50 }
-  }
-}
-
-const getPositionForOrientation = <T extends 'horizontal' | 'vertical' | '2d'>(
-  fullPosition: Position2D,
-  orientation: T
-): PositionForOrientation<T> => {
-  switch (orientation) {
-    case 'horizontal':
-      return { x: fullPosition.x } as PositionForOrientation<T>
-    case 'vertical':
-      return { y: fullPosition.y } as PositionForOrientation<T>
-    default:
-      return fullPosition as PositionForOrientation<T>
-  }
-}
-
-interface Compare2DProps<T extends 'horizontal' | 'vertical' | '2d' = '2d'> {
+interface Compare2DProps {
   beforeImage?: string
   afterImage?: string
   beforeContent?: React.ReactNode
   afterContent?: React.ReactNode
-  onPositionChange?: (position: PositionForOrientation<T>) => void
-  position?: PositionForOrientation<T>
-  defaultPosition?: PositionForOrientation<T>
+  onPositionChange?: (position: Position2D) => void
+  position?: Position2D
+  defaultPosition?: Position2D
   width?: number | string
   height?: number | string
   disabled?: boolean
@@ -70,10 +18,10 @@ interface Compare2DProps<T extends 'horizontal' | 'vertical' | '2d' = '2d'> {
   style?: React.CSSProperties
   'aria-label'?: string
   'aria-labelledby'?: string
-  orientation?: T
+  orientation?: 'horizontal' | 'vertical' | '2d'
 }
 
-export const Compare2D = <T extends 'horizontal' | 'vertical' | '2d' = '2d'>({
+export const Compare2D = ({
   beforeImage,
   afterImage,
   beforeContent,
@@ -88,20 +36,15 @@ export const Compare2D = <T extends 'horizontal' | 'vertical' | '2d' = '2d'>({
   style = {},
   'aria-label': ariaLabel = '2D comparison slider',
   'aria-labelledby': ariaLabelledby,
-  orientation = '2d' as T,
-}: Compare2DProps<T>) => {
-  // Convert the controlled position to full Position2D if provided
-  const fullControlledPosition = controlledPosition
-    ? getDefaultPosition(orientation, controlledPosition)
-    : undefined
-
+  orientation = '2d',
+}: Compare2DProps) => {
   const isControlled = controlledPosition !== undefined
   const [internalPosition, setInternalPosition] = useState<Position2D>(
-    getDefaultPosition(orientation, defaultPosition)
+    defaultPosition || { x: 50, y: 50 }
   )
 
-  // Use full Position2D internally for all calculations
-  const fullPosition = isControlled ? fullControlledPosition! : internalPosition
+  // Use Position2D directly for all calculations
+  const fullPosition = isControlled ? controlledPosition : internalPosition
   const [isDragging, setIsDragging] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const handleRef = useRef<HTMLDivElement>(null)
@@ -111,30 +54,22 @@ export const Compare2D = <T extends 'horizontal' | 'vertical' | '2d' = '2d'>({
       if (!containerRef.current) return
 
       const rect = containerRef.current.getBoundingClientRect()
-      let x = Math.max(
+      const x = Math.max(
         0,
         Math.min(100, ((clientX - rect.left) / rect.width) * 100)
       )
-      let y = Math.max(
+      const y = Math.max(
         0,
         Math.min(100, ((clientY - rect.top) / rect.height) * 100)
       )
-
-      // Apply orientation constraints
-      if (orientation === 'horizontal') {
-        y = 50 // Fixed at center for horizontal mode
-      } else if (orientation === 'vertical') {
-        x = 50 // Fixed at center for vertical mode
-      }
 
       const newPosition = { x, y }
       if (!isControlled) {
         setInternalPosition(newPosition)
       }
-      // Only call callback with position data relevant to the orientation
-      onPositionChange?.(getPositionForOrientation(newPosition, orientation))
+      onPositionChange?.(newPosition)
     },
-    [isControlled, onPositionChange, orientation]
+    [isControlled, onPositionChange]
   )
 
   const handleMouseDown = useCallback(
@@ -195,70 +130,42 @@ export const Compare2D = <T extends 'horizontal' | 'vertical' | '2d' = '2d'>({
 
       switch (e.key) {
         case 'ArrowLeft':
-          if (orientation === 'vertical') return
           e.preventDefault()
           newX = Math.max(0, fullPosition.x - step)
           break
         case 'ArrowRight':
-          if (orientation === 'vertical') return
           e.preventDefault()
           newX = Math.min(100, fullPosition.x + step)
           break
         case 'ArrowUp':
-          if (orientation === 'horizontal') return
           e.preventDefault()
           newY = Math.max(0, fullPosition.y - step)
           break
         case 'ArrowDown':
-          if (orientation === 'horizontal') return
           e.preventDefault()
           newY = Math.min(100, fullPosition.y + step)
           break
         case 'Home':
           e.preventDefault()
-          if (orientation === 'horizontal') {
-            newX = 0
-            newY = 50
-          } else if (orientation === 'vertical') {
-            newX = 50
-            newY = 0
-          } else {
-            newX = 0
-            newY = 0
-          }
+          newX = 0
+          newY = 0
           break
         case 'End':
           e.preventDefault()
-          if (orientation === 'horizontal') {
-            newX = 100
-            newY = 50
-          } else if (orientation === 'vertical') {
-            newX = 50
-            newY = 100
-          } else {
-            newX = 100
-            newY = 100
-          }
+          newX = 100
+          newY = 100
           break
         default:
           return
-      }
-
-      // Apply orientation constraints
-      if (orientation === 'horizontal') {
-        newY = 50
-      } else if (orientation === 'vertical') {
-        newX = 50
       }
 
       const newPosition = { x: newX, y: newY }
       if (!isControlled) {
         setInternalPosition(newPosition)
       }
-      // Only call callback with position data relevant to the orientation
-      onPositionChange?.(getPositionForOrientation(newPosition, orientation))
+      onPositionChange?.(newPosition)
     },
-    [disabled, fullPosition, isControlled, onPositionChange, orientation]
+    [disabled, fullPosition, isControlled, onPositionChange]
   )
 
   useEffect(() => {

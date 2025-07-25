@@ -2,25 +2,26 @@ import { useState } from 'react'
 import {
   Compare2D,
   type Position2D,
-  type PositionHorizontal,
-  type PositionVertical,
 } from '../../src'
 import './basic-styles.css'
 
 export function App() {
-  // Each position type only contains the relevant properties for type safety
-  const [horizontalPosition, setHorizontalPosition] =
-    useState<PositionHorizontal>({ x: 75 })
-  const [verticalPosition, setVerticalPosition] = useState<PositionVertical>({
-    y: 25,
-  })
+  // All orientations now use Position2D for full flexibility
+  const [horizontalPosition, setHorizontalPosition] = useState<Position2D>({ x: 75, y: 50 })
+  const [verticalPosition, setVerticalPosition] = useState<Position2D>({ x: 50, y: 25 })
   const [twoDPosition, setTwoDPosition] = useState<Position2D>({ x: 75, y: 75 })
-
-  // TypeScript prevents accessing irrelevant properties:
-  // horizontalPosition.y ❌ - TypeScript error, y doesn't exist on PositionHorizontal
-  // verticalPosition.x ❌ - TypeScript error, x doesn't exist on PositionVertical
-  // twoDPosition.x ✅ - Both x and y are available on Position2D
-  // twoDPosition.y ✅
+  
+  // Example: Constrain horizontal handle to center Y
+  const [constrainHorizontal, setConstrainHorizontal] = useState(false)
+  const [constrainVertical, setConstrainVertical] = useState(false)
+  
+  const handleHorizontalChange = (position: Position2D) => {
+    setHorizontalPosition(constrainHorizontal ? { x: position.x, y: 50 } : position)
+  }
+  
+  const handleVerticalChange = (position: Position2D) => {
+    setVerticalPosition(constrainVertical ? { x: 50, y: position.y } : position)
+  }
 
   return (
     <div className="p-8 flex gap-8">
@@ -46,14 +47,23 @@ export function App() {
             }
             width="100%"
             height="100%"
-            onPositionChange={setHorizontalPosition}
+            onPositionChange={handleHorizontalChange}
             position={horizontalPosition}
             orientation="horizontal"
           />
         </div>
         <p className="mt-2 text-sm text-gray-600">
-          Position: {horizontalPosition.x.toFixed(0)}% (X only)
+          Position: X: {horizontalPosition.x.toFixed(0)}%, Y: {horizontalPosition.y.toFixed(0)}%
         </p>
+        <label className="flex items-center mt-2 text-sm">
+          <input 
+            type="checkbox" 
+            checked={constrainHorizontal}
+            onChange={(e) => setConstrainHorizontal(e.target.checked)}
+            className="mr-2"
+          />
+          Constrain handle to center Y (y=50)
+        </label>
       </div>
 
       <div>
@@ -78,14 +88,23 @@ export function App() {
             }
             width="100%"
             height="100%"
-            onPositionChange={setVerticalPosition}
+            onPositionChange={handleVerticalChange}
             position={verticalPosition}
             orientation="vertical"
           />
         </div>
         <p className="mt-2 text-sm text-gray-600">
-          Position: {verticalPosition.y.toFixed(0)}% (Y only)
+          Position: X: {verticalPosition.x.toFixed(0)}%, Y: {verticalPosition.y.toFixed(0)}%
         </p>
+        <label className="flex items-center mt-2 text-sm">
+          <input 
+            type="checkbox" 
+            checked={constrainVertical}
+            onChange={(e) => setConstrainVertical(e.target.checked)}
+            className="mr-2"
+          />
+          Constrain handle to center X (x=50)
+        </label>
       </div>
 
       <div>
@@ -116,8 +135,7 @@ export function App() {
           />
         </div>
         <p className="mt-2 text-sm text-gray-600">
-          Position: X: {twoDPosition.x.toFixed(0)}%, Y:{' '}
-          {twoDPosition.y.toFixed(0)}% (Both X & Y)
+          Position: X: {twoDPosition.x.toFixed(0)}%, Y: {twoDPosition.y.toFixed(0)}%
         </p>
       </div>
     </div>
