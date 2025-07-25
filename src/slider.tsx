@@ -3,6 +3,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 export type Position2D = { x: number; y: number }
 
+export type DragTarget = 'all' | 'handle' | 'handle-lines'
+
 interface Compare2DProps {
   beforeImage?: string
   afterImage?: string
@@ -19,6 +21,7 @@ interface Compare2DProps {
   'aria-label'?: string
   'aria-labelledby'?: string
   orientation?: 'horizontal' | 'vertical' | '2d'
+  dragTarget?: DragTarget
 }
 
 export const Compare2D = ({
@@ -37,6 +40,7 @@ export const Compare2D = ({
   'aria-label': ariaLabel = '2D comparison slider',
   'aria-labelledby': ariaLabelledby,
   orientation = '2d',
+  dragTarget = 'all',
 }: Compare2DProps) => {
   const isControlled = controlledPosition !== undefined
   const [internalPosition, setInternalPosition] = useState<Position2D>(
@@ -267,8 +271,10 @@ export const Compare2D = ({
       ref={containerRef}
       className={`compare-2d ${className}`}
       style={containerStyle}
-      onMouseDown={handleMouseDown}
-      onTouchStart={handleTouchStart}
+      {...(dragTarget === 'all' && {
+        onMouseDown: handleMouseDown,
+        onTouchStart: handleTouchStart,
+      })}
       role="application"
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledby}
@@ -329,6 +335,10 @@ export const Compare2D = ({
         {(orientation === 'horizontal' || orientation === '2d') && (
           <div
             style={verticalLineStyle}
+            {...(dragTarget === 'handle-lines' && {
+              onMouseDown: handleMouseDown,
+              onTouchStart: handleTouchStart,
+            })}
             data-compare-2d="line"
             data-orientation="vertical"
             data-x={Math.round(fullPosition.x)}
@@ -337,6 +347,10 @@ export const Compare2D = ({
         {(orientation === 'vertical' || orientation === '2d') && (
           <div
             style={horizontalLineStyle}
+            {...(dragTarget === 'handle-lines' && {
+              onMouseDown: handleMouseDown,
+              onTouchStart: handleTouchStart,
+            })}
             data-compare-2d="line"
             data-orientation="horizontal"
             data-y={Math.round(fullPosition.y)}
@@ -348,6 +362,10 @@ export const Compare2D = ({
         tabIndex={disabled ? -1 : 0}
         ref={handleRef}
         style={handleStyle}
+        {...((dragTarget === 'handle' || dragTarget === 'handle-lines') && {
+          onMouseDown: handleMouseDown,
+          onTouchStart: handleTouchStart,
+        })}
         role="slider"
         aria-label={
           orientation === 'horizontal'

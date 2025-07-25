@@ -2,6 +2,7 @@ import { useState } from 'react'
 import {
   Compare2D,
   type Position2D,
+  type DragTarget,
 } from '../../src'
 import './basic-styles.css'
 
@@ -14,6 +15,11 @@ export function App() {
   // Example: Constrain horizontal handle to center Y
   const [constrainHorizontal, setConstrainHorizontal] = useState(false)
   const [constrainVertical, setConstrainVertical] = useState(false)
+  
+  // Demo drag target options
+  const [horizontalDragTarget, setHorizontalDragTarget] = useState<DragTarget>('all')
+  const [verticalDragTarget, setVerticalDragTarget] = useState<DragTarget>('all')
+  const [twoDDragTarget, setTwoDDragTarget] = useState<DragTarget>('all')
   
   const handleHorizontalChange = (position: Position2D) => {
     setHorizontalPosition(constrainHorizontal ? { x: position.x, y: 50 } : position)
@@ -50,6 +56,7 @@ export function App() {
             onPositionChange={handleHorizontalChange}
             position={horizontalPosition}
             orientation="horizontal"
+            dragTarget={horizontalDragTarget}
           />
         </div>
         <p className="mt-2 text-sm text-gray-600">
@@ -64,6 +71,19 @@ export function App() {
           />
           Constrain handle to center Y (y=50)
         </label>
+        <div className="mt-2">
+          <label htmlFor="horizontal-drag-target" className="block text-sm font-medium mb-1">Drag Target:</label>
+          <select 
+            id="horizontal-drag-target"
+            value={horizontalDragTarget}
+            onChange={(e) => setHorizontalDragTarget(e.target.value as DragTarget)}
+            className="border border-gray-300 rounded px-2 py-1 text-sm"
+          >
+            <option value="all">All (click anywhere)</option>
+            <option value="handle">Handle only</option>
+            <option value="handle-lines">Handle + Lines</option>
+          </select>
+        </div>
       </div>
 
       <div>
@@ -91,6 +111,7 @@ export function App() {
             onPositionChange={handleVerticalChange}
             position={verticalPosition}
             orientation="vertical"
+            dragTarget={verticalDragTarget}
           />
         </div>
         <p className="mt-2 text-sm text-gray-600">
@@ -105,6 +126,19 @@ export function App() {
           />
           Constrain handle to center X (x=50)
         </label>
+        <div className="mt-2">
+          <label htmlFor="vertical-drag-target" className="block text-sm font-medium mb-1">Drag Target:</label>
+          <select 
+            id="vertical-drag-target"
+            value={verticalDragTarget}
+            onChange={(e) => setVerticalDragTarget(e.target.value as DragTarget)}
+            className="border border-gray-300 rounded px-2 py-1 text-sm"
+          >
+            <option value="all">All (click anywhere)</option>
+            <option value="handle">Handle only</option>
+            <option value="handle-lines">Handle + Lines</option>
+          </select>
+        </div>
       </div>
 
       <div>
@@ -132,11 +166,25 @@ export function App() {
             onPositionChange={setTwoDPosition}
             position={twoDPosition}
             orientation="2d"
+            dragTarget={twoDDragTarget}
           />
         </div>
         <p className="mt-2 text-sm text-gray-600">
           Position: X: {twoDPosition.x.toFixed(0)}%, Y: {twoDPosition.y.toFixed(0)}%
         </p>
+        <div className="mt-2">
+          <label htmlFor="2d-drag-target" className="block text-sm font-medium mb-1">Drag Target:</label>
+          <select 
+            id="2d-drag-target"
+            value={twoDDragTarget}
+            onChange={(e) => setTwoDDragTarget(e.target.value as DragTarget)}
+            className="border border-gray-300 rounded px-2 py-1 text-sm"
+          >
+            <option value="all">All (click anywhere)</option>
+            <option value="handle">Handle only</option>
+            <option value="handle-lines">Handle + Lines</option>
+          </select>
+        </div>
       </div>
     </div>
   )
