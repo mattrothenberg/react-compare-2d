@@ -120,13 +120,6 @@ export const Compare2D = <T extends 'horizontal' | 'vertical' | '2d' = '2d'>({
         Math.min(100, ((clientY - rect.top) / rect.height) * 100)
       )
 
-      // Apply orientation constraints
-      if (orientation === 'horizontal') {
-        y = 50 // Fixed at center for horizontal mode
-      } else if (orientation === 'vertical') {
-        x = 50 // Fixed at center for vertical mode
-      }
-
       const newPosition = { x, y }
       if (!isControlled) {
         setInternalPosition(newPosition)
@@ -242,13 +235,6 @@ export const Compare2D = <T extends 'horizontal' | 'vertical' | '2d' = '2d'>({
           break
         default:
           return
-      }
-
-      // Apply orientation constraints
-      if (orientation === 'horizontal') {
-        newY = 50
-      } else if (orientation === 'vertical') {
-        newX = 50
       }
 
       const newPosition = { x: newX, y: newY }
