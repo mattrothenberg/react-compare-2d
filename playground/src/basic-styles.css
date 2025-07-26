@@ -25,3 +25,11 @@
 [data-compare-2d="line"][data-orientation="horizontal"] {
   height: 1px;
 }
+
+[data-compare-2d="line-touch-target"] {
+  transition: background-color 0.15s ease;
+}
+
+[data-compare-2d="line-touch-target"]:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
