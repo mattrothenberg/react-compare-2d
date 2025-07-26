@@ -246,6 +246,7 @@ export const Compare2D = ({
     top: `${fullPosition.y}%`,
     transform: 'translate(-50%, -50%)',
     zIndex: 10,
+    cursor: dragTarget !== 'all' ? 'move' : undefined,
   }
 
   const verticalLineStyle: React.CSSProperties = {
@@ -264,6 +265,28 @@ export const Compare2D = ({
     width: '100%',
     transform: 'translateY(-50%)',
     zIndex: 5,
+  }
+
+  const verticalLineTouchTargetStyle: React.CSSProperties = {
+    position: 'absolute',
+    left: `${fullPosition.x}%`,
+    top: 0,
+    height: '100%',
+    width: '16px',
+    transform: 'translateX(-50%)',
+    zIndex: 6,
+    cursor: 'ew-resize',
+  }
+
+  const horizontalLineTouchTargetStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: `${fullPosition.y}%`,
+    left: 0,
+    width: '100%',
+    height: '16px',
+    transform: 'translateY(-50%)',
+    zIndex: 6,
+    cursor: 'ns-resize',
   }
 
   return (
@@ -333,28 +356,42 @@ export const Compare2D = ({
         </div>
 
         {(orientation === 'horizontal' || orientation === '2d') && (
-          <div
-            style={verticalLineStyle}
-            {...(dragTarget === 'handle-lines' && {
-              onMouseDown: handleMouseDown,
-              onTouchStart: handleTouchStart,
-            })}
-            data-compare-2d="line"
-            data-orientation="vertical"
-            data-x={Math.round(fullPosition.x)}
-          />
+          <>
+            <div
+              style={verticalLineStyle}
+              data-compare-2d="line"
+              data-orientation="vertical"
+              data-x={Math.round(fullPosition.x)}
+            />
+            {dragTarget === 'handle-lines' && (
+              <div
+                style={verticalLineTouchTargetStyle}
+                onMouseDown={handleMouseDown}
+                onTouchStart={handleTouchStart}
+                data-compare-2d="line-touch-target"
+                data-orientation="vertical"
+              />
+            )}
+          </>
         )}
         {(orientation === 'vertical' || orientation === '2d') && (
-          <div
-            style={horizontalLineStyle}
-            {...(dragTarget === 'handle-lines' && {
-              onMouseDown: handleMouseDown,
-              onTouchStart: handleTouchStart,
-            })}
-            data-compare-2d="line"
-            data-orientation="horizontal"
-            data-y={Math.round(fullPosition.y)}
-          />
+          <>
+            <div
+              style={horizontalLineStyle}
+              data-compare-2d="line"
+              data-orientation="horizontal"
+              data-y={Math.round(fullPosition.y)}
+            />
+            {dragTarget === 'handle-lines' && (
+              <div
+                style={horizontalLineTouchTargetStyle}
+                onMouseDown={handleMouseDown}
+                onTouchStart={handleTouchStart}
+                data-compare-2d="line-touch-target"
+                data-orientation="horizontal"
+              />
+            )}
+          </>
         )}
       </div>
 
