@@ -1,6 +1,9 @@
 {
   "permissions": {
-    "allow": ["Bash(npm install:*)"],
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(git add:*)"
+    ],
     "deny": []
   }
 }
